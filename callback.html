@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Callback Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: #2d3748;
+            text-align: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 100%);
+            color: #fff;
+            padding: 25px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
+        }
+        .main {
+            max-width: 900px;
+            margin: 40px auto;
+        }
+        .main h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        .main p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+        .query-parameters {
+            margin-top: 30px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: left;
+            transition: transform 0.2s ease;
+        }
+        .query-parameters:hover {
+            transform: translateY(-2px);
+        }
+        .query-parameters h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .json-container {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Consolas', monospace;
+            line-height: 1.5;
+        }
+        .json-key {
+            color: #63b3ed;
+        }
+        .json-string {
+            color: #68d391;
+        }
+        .json-number {
+            color: #f6ad55;
+        }
+        footer {
+            margin-top: 60px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        @media(max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .main h2 {
+                font-size: 1.5rem;
+            }
+            .query-parameters {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Alienhumanoid.com</h1>
+    </header>
+    <section class="main">
+        <h2>It looks like you just completed a payment</h2>
+        <p>Or maybe not</p>
+        <div class="query-parameters">
+            <h3>Callback parameters</h3>
+            <div id="parameters" class="json-container">No parameters found</div>
+        </div>
+    </section>
+    <footer>
+        <p>© 2024 Alienhumanoid.com. Exploring the cosmos one story at a time.</p>
+    </footer>
+    <script>
+        // Function to syntax highlight JSON
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        // Function to get and format query string parameters
+        function displayQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const paramDiv = document.getElementById('parameters');
+            
+            if (params.toString() === "") {
+                paramDiv.innerHTML = "No query parameters found in the URL.";
+            } else {
+                const paramsObject = {};
+                params.forEach((value, key) => {
+                    // Try to parse the value as JSON if possible
+                    try {
+                        paramsObject[key] = JSON.parse(value);
+                    } catch (e) {
+                        paramsObject[key] = value;
+                    }
+                });
+                
+                paramDiv.innerHTML = `<pre>${syntaxHighlight(paramsObject)}</pre>`;
+            }
+        }
+
+        // Call the function to display parameters on page load
+        window.onload = displayQueryParams;
+    </script>
+</body>
+</html>

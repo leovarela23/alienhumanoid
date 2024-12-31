@@ -3,42 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to New Society</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Welcome to Alienhumanoid.com</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: #2d3748;
+            text-align: center;
+            min-height: 100vh;
             padding: 20px;
-            background-color: #f0f0f0;
+        }
+        header {
+            background: linear-gradient(90deg, #1a365d 0%, #2c5282 100%);
+            color: #fff;
+            padding: 25px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.5px;
         }
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: left;
         }
-        h1, h2 {
-            color: #333;
-            text-align: center;
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2d3748;
         }
-        .section {
-            margin: 40px 0;
-            padding: 20px;
-            border-top: 1px solid #eee;
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #4a5568;
         }
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin: 20px 0;
         }
         .feature-card {
-            padding: 15px;
-            background-color: #f8f8f8;
-            border-radius: 4px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             text-align: center;
+            transition: transform 0.2s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+        .feature-card h3 {
+            color: #2c5282;
+            margin-bottom: 10px;
         }
         .contact-form {
             display: grid;
@@ -48,40 +80,71 @@
         }
         .contact-form input,
         .contact-form textarea {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+        }
+        .contact-form button {
+            padding: 12px;
+            border: none;
+            background: #2c5282;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .contact-form button:hover {
+            background: #1a365d;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+        @media(max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Alienhumanoid.com</h1>
+    </header>
     <div class="container">
-        <h1>Welcome to New Society</h1>
-        
-        <div class="section">
-            <h2>Our Mission</h2>
-            <p>We are dedicated to creating innovative solutions that empower communities and foster collaboration. Our goal is to build a better future through technology and human connection.</p>
-        </div>
+        <section>
+            <h2>Our Story</h2>
+            <p>Long ago—though not in human terms—a caveman from the farthest reaches of the universe crash-landed on Earth. Hailing from a planet bathed in eternal twilight, this interstellar wanderer wasn’t your ordinary caveman. He was a cosmic anomaly, a being who carried ancient wisdom and advanced technology in the form of primitive tools. But something went wrong. His memory was scrambled during the crash, leaving him stranded and purpose-less, wandering Earth, trying to piece together who he was and why he had come here. Alienhumanoid.com is his legacy—a digital outpost to share his discoveries, reconnect with the cosmos, and explore his purpose alongside Earth’s inhabitants.</p>
+        </section>
 
-        <div class="section">
-            <h2>Our Services</h2>
+        <section>
+            <h2>Our Mission</h2>
+            <p>Empowering the Earth's inhabitants with tools and ideas from the farthest corners of the universe. Together, we can unlock ancient secrets, embrace innovation, and chart a path to an extraordinary future.</p>
+        </section>
+
+        <section>
+            <h2>Our Features</h2>
             <div class="features">
                 <div class="feature-card">
-                    <h3>Community Building</h3>
-                    <p>Connect with like-minded individuals and grow together.</p>
+                    <h3>Universal Knowledge</h3>
+                    <p>Access ancient wisdom brought from the stars.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Innovation Hub</h3>
-                    <p>Access cutting-edge resources and tools.</p>
+                    <h3>Interstellar Tools</h3>
+                    <p>Harness futuristic solutions for modern problems.</p>
                 </div>
                 <div class="feature-card">
-                    <h3>Knowledge Sharing</h3>
-                    <p>Learn from experts and share your expertise.</p>
+                    <h3>Cosmic Collaboration</h3>
+                    <p>Join a community of dreamers and doers united by curiosity.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="section">
+        <section>
             <h2>Contact Us</h2>
             <form class="contact-form">
                 <input type="text" placeholder="Your Name" required>
@@ -89,7 +152,10 @@
                 <textarea rows="4" placeholder="Your Message" required></textarea>
                 <button type="submit">Send Message</button>
             </form>
-        </div>
+        </section>
     </div>
+    <footer>
+        <p>© 2024 Alienhumanoid.com. Exploring the cosmos one story at a time.</p>
+    </footer>
 </body>
 </html>
