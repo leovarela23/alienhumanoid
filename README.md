@@ -1,4 +1,4 @@
-# Alienhumanoid.com
+# alienhumanoid.com
 
 **Alienhumanoid.com** is a playful and visually engaging website inspired by the story of an interstellar caveman. The site features a fun alien-catching game, an about page showcasing the creator, and a custom 404 page with a unique design.
 
