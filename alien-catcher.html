@@ -22,19 +22,30 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
             overflow: hidden;
         }
         header {
             background: linear-gradient(90deg, #1a365d 0%, #2c5282 100%);
             color: #fff;
-            padding: 15px 0;
+            padding: 15px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 90%;
+            max-width: 600px;
         }
         header h1 {
             font-size: 1.5rem;
             margin: 0;
+        }
+        .instructions {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         .game-container {
             position: relative;
@@ -55,22 +66,61 @@
             height: 40px;
             background: #2c5282;
             border-radius: 50%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 1.5rem;
+            transition: transform 0.1s;
         }
-        .scoreboard {
+        .alien:hover {
+            transform: scale(1.1);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 600px;
             margin-top: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .time-left, .score-display {
             font-size: 1.2rem;
+            font-weight: bold;
             color: #2d3748;
         }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        .restart-btn {
+            background: #2c5282;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .restart-btn:hover {
+            background: #1a365d;
+        }
         footer {
-            margin-top: 40px;
+            margin-top: 20px;
             font-size: 0.8rem;
             color: #718096;
         }
@@ -81,28 +131,8 @@
             .alien {
                 width: 30px;
                 height: 30px;
-                font-size: 0.9rem;
             }
-            .game-container {
-                height: 60vh;
-            }
-            .scoreboard {
-                font-size: 1rem;
-            }
-        }
-        @media (max-width: 480px) {
-            header h1 {
-                font-size: 1rem;
-            }
-            .alien {
-                width: 25px;
-                height: 25px;
-                font-size: 0.8rem;
-            }
-            .game-container {
-                height: 70vh;
-            }
-            .scoreboard {
+            .instructions {
                 font-size: 0.9rem;
             }
         }
@@ -112,11 +142,20 @@
     <header>
         <h1>Alien Caveman Catcher</h1>
     </header>
+    <div class="instructions">
+        <p>👾 Click the alien as many times as you can in 60 seconds! The alien moves faster with each catch.</p>
+    </div>
     <div class="game-container" id="game-container">
         <div class="alien" id="alien">👾</div>
+        <div class="game-over" id="game-over">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button class="restart-btn" id="restart-btn">Play Again</button>
+        </div>
     </div>
-    <div class="scoreboard">
-        Score: <span id="score">0</span>
+    <div class="stats">
+        <div class="time-left">Time: <span id="time">60</span>s</div>
+        <div class="score-display">Score: <span id="score">0</span></div>
     </div>
     <footer>
         <p>© 2024 Alienhumanoid.com. Catch me if you can!</p>
@@ -125,14 +164,21 @@
         const alien = document.getElementById('alien');
         const gameContainer = document.getElementById('game-container');
         const scoreDisplay = document.getElementById('score');
-        let score = 0;
-        let speed = 2000; // Initial speed in milliseconds
-        let alienInterval;
+        const timeDisplay = document.getElementById('time');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const restartBtn = document.getElementById('restart-btn');
 
-        // Function to move the alien to a random position
+        let score = 0;
+        let timeLeft = 60;
+        let speed = 2000;
+        let alienInterval;
+        let timerInterval;
+        let gameActive = false;
+
         function moveAlien() {
             const containerRect = gameContainer.getBoundingClientRect();
-            const alienSize = alien.offsetWidth; // Width of the alien
+            const alienSize = alien.offsetWidth;
             const maxX = containerRect.width - alienSize;
             const maxY = containerRect.height - alienSize;
 
@@ -143,28 +189,62 @@
             alien.style.top = `${randomY}px`;
         }
 
-        // Function to start moving the alien
+        function startGame() {
+            // Reset game state
+            score = 0;
+            timeLeft = 60;
+            speed = 2000;
+            gameActive = true;
+            
+            // Update displays
+            scoreDisplay.textContent = score;
+            timeDisplay.textContent = timeLeft;
+            gameOverScreen.style.display = 'none';
+            
+            // Start intervals
+            startAlienMovement();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(alienInterval);
+            clearInterval(timerInterval);
+            finalScoreDisplay.textContent = score;
+            gameOverScreen.style.display = 'block';
+        }
+
         function startAlienMovement() {
-            clearInterval(alienInterval); // Clear previous interval
+            clearInterval(alienInterval);
             alienInterval = setInterval(moveAlien, speed);
         }
 
-        // Event listener for catching the alien
         alien.addEventListener('click', () => {
+            if (!gameActive) return;
+            
             score++;
             scoreDisplay.textContent = score;
 
             // Increase speed as score increases
-            if (speed > 500) { // Set a minimum speed limit
-                speed -= 100; // Decrease interval time
+            if (speed > 500) {
+                speed -= 50;
             }
 
-            moveAlien(); // Move the alien immediately after a click
-            startAlienMovement(); // Restart movement with the new speed
+            moveAlien();
+            startAlienMovement();
         });
 
-        // Initial alien movement
-        startAlienMovement();
+        restartBtn.addEventListener('click', startGame);
+
+        // Start the first game
+        startGame();
     </script>
 </body>
 </html>
