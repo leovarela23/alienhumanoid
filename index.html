@@ -2,78 +2,223 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Under Construction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Leo Varela · Under Construction</title>
   <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #04050b;
+      --bg-2: #111329;
+      --text: #f7f9ff;
+      --muted: #a3aed1;
+      --blue: #7ca8ff;
+      --violet: #a16bff;
+      --line: rgba(255,255,255,0.12);
+      --line-strong: rgba(124,168,255,0.24);
+      --panel: rgba(9, 10, 22, 0.62);
     }
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      line-height: 1.6;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
-      color: #2d3748;
+      margin: 0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 20%, rgba(161,107,255,0.22), transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(124,168,255,0.18), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      display: grid;
+      place-items: center;
       padding: 20px;
-      text-align: center;
+      overflow-x: hidden;
+    }
+    .orb {
+      position: fixed;
+      width: min(70vw, 520px);
+      height: min(70vw, 520px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,168,255,0.20) 0%, rgba(124,168,255,0.02) 45%, transparent 65%);
+      filter: blur(16px);
+      pointer-events: none;
     }
     .card {
-      max-width: 720px;
-      width: 100%;
-      background: #ffffff;
-      border-radius: 18px;
-      padding: 48px 32px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.10);
+      position: relative;
+      z-index: 1;
+      width: min(920px, 100%);
+      text-align: center;
+      padding: 28px 20px 24px;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      text-align: left;
     }
     .eyebrow {
-      color: #2c5282;
+      color: var(--blue);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-size: 0.85rem;
-      margin-bottom: 14px;
+      letter-spacing: .15em;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .menu a {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: rgba(255,255,255,0.03);
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+    .menu a:hover,
+    .menu a:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,0.06);
+      outline: none;
+    }
+    .menu a.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      color: #07111f;
       font-weight: 700;
     }
     h1 {
-      font-size: clamp(2rem, 5vw, 3.4rem);
-      margin-bottom: 18px;
-      color: #1a365d;
+      margin: 0 0 16px;
+      font-size: clamp(3rem, 12vw, 6.5rem);
+      letter-spacing: -.06em;
+      line-height: .92;
     }
     p {
-      font-size: 1.08rem;
-      color: #4a5568;
-      margin-bottom: 14px;
+      margin: 0 auto 14px;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 1rem;
     }
     .status {
       display: inline-block;
-      margin-top: 14px;
+      margin-top: 10px;
       padding: 10px 16px;
       border-radius: 999px;
-      background: #ebf8ff;
-      color: #2c5282;
-      font-weight: 600;
-      border: 1px solid #bee3f8;
+      border: 1px solid rgba(161,107,255,0.32);
+      color: #d8c8ff;
+      background: rgba(161,107,255,0.08);
     }
-    footer {
-      margin-top: 28px;
-      font-size: 0.92rem;
-      color: #718096;
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .links a {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: rgba(255,255,255,0.03);
+    }
+    .links a.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      color: #07111f;
+      font-weight: 700;
+    }
+    .footer {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .92rem;
+      text-align: left;
+    }
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--text);
+      border-bottom-color: rgba(255,255,255,0.28);
+      outline: none;
+    }
+    @media (max-width: 759px) {
+      .topbar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .menu {
+        width: 100%;
+      }
+      .menu a {
+        flex: 1 1 auto;
+        min-width: 120px;
+      }
+      .footer {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+    @media (min-width: 760px) {
+      .card { padding: 32px 38px 28px; }
     }
   </style>
 </head>
 <body>
+  <div class="orb"></div>
   <main class="card">
+    <div class="topbar">
+      <div class="eyebrow">Leo Varela · Transmission in progress</div>
+      <nav class="menu" aria-label="Site navigation">
+        <a class="primary" href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/404-c">404</a>
+      </nav>
+    </div>
+
     <h1>Under construction</h1>
-    <p>I’m rebuilding this space right now.</p>
-    <p>Things may change quickly while work is in progress.</p>
-    <div class="status">Check back soon</div>
-    <footer>© 2026 Leo Varela</footer>
+    <p>A new interface is taking shape here, built around signal, curiosity, and a cleaner orbit.</p>
+    <p>Things are being tuned carefully. Expect a more spacey, sharper, and more personal site very soon.</p>
+    <div class="status">Rebuilding the mothership</div>
+
+    <div class="links">
+      <a class="primary" href="/about">Enter the story</a>
+      <a href="/404-c">Play Wormhole Snake</a>
+    </div>
+
+    <footer class="footer">
+      <div>Exploring systems, space, and strange futures.</div>
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="mailto:info@leo-varela.com">Contact</a>
+      </div>
+    </footer>
   </main>
 </body>
 </html>

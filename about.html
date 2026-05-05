@@ -1,126 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>About the Creator</title>
-    <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
-    <style>
-        /* Shared styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
-            color: #2d3748;
-            text-align: center;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        header {
-            background: linear-gradient(90deg, #1a365d 0%, #2c5282 100%);
-            color: #fff;
-            padding: 25px 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            margin-bottom: 40px;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            letter-spacing: -0.5px;
-        }
-        .content {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            padding: 30px;
-            max-width: 900px;
-            width: 100%;
-            text-align: left;
-            line-height: 1.8;
-        }
-        .content h2 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #2d3748;
-        }
-        .content p {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            color: #4a5568;
-        }
-        .content a {
-            color: #2c5282;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .content a:hover {
-            text-decoration: underline;
-        }
-        .content ul {
-            list-style: disc;
-            margin-left: 20px;
-        }
-        .content ul li {
-            margin-bottom: 10px;
-        }
-        footer {
-            margin-top: 40px;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: #718096;
-        }
-        @media(max-width: 600px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            .content h2 {
-                font-size: 1.5rem;
-            }
-            .content p {
-                font-size: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>About · Leo Varela</title>
+  <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg: #04050b;
+      --bg-2: #111329;
+      --text: #f7f9ff;
+      --muted: #a3aed1;
+      --blue: #7ca8ff;
+      --violet: #a16bff;
+      --line: rgba(255,255,255,0.12);
+      --line-strong: rgba(124,168,255,0.24);
+      --panel: rgba(9, 10, 22, 0.68);
+      --panel-2: rgba(255,255,255,0.03);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 20%, rgba(161,107,255,0.22), transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(124,168,255,0.18), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .orb {
+      position: fixed;
+      inset: auto auto 8% 8%;
+      width: min(42vw, 420px);
+      height: min(42vw, 420px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,168,255,0.18) 0%, rgba(124,168,255,0.02) 45%, transparent 68%);
+      filter: blur(18px);
+      pointer-events: none;
+    }
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .hero,
+    .story,
+    .details,
+    .footer {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+      border-radius: 28px;
+    }
+    .hero {
+      padding: 28px 20px 24px;
+      margin-bottom: 22px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px;
+      text-align: left;
+    }
+    .eyebrow {
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .menu a,
+    .cta a {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: rgba(255,255,255,0.03);
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+    .menu a:hover,
+    .menu a:focus-visible,
+    .cta a:hover,
+    .cta a:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,0.06);
+      outline: none;
+    }
+    .menu a.primary,
+    .cta a.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      color: #07111f;
+      font-weight: 700;
+    }
+    .hero-grid {
+      display: grid;
+      gap: 22px;
+      align-items: center;
+    }
+    .hero-copy h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2.8rem, 10vw, 5.8rem);
+      line-height: .94;
+      letter-spacing: -.05em;
+    }
+    .hero-copy p {
+      margin: 0 0 14px;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+    .cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .hero-media img {
+      width: 100%;
+      display: block;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(0,0,0,.34);
+    }
+    .story {
+      padding: 26px 20px;
+      margin-bottom: 22px;
+    }
+    .story-grid {
+      display: grid;
+      gap: 18px;
+    }
+    .panel {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 22px 18px;
+      background: var(--panel-2);
+    }
+    .panel h2,
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .details {
+      padding: 24px 20px;
+      margin-bottom: 22px;
+    }
+    .detail-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .detail {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+    }
+    .detail strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: .92rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .detail span {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .footer {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--text);
+      border-bottom-color: rgba(255,255,255,0.28);
+      outline: none;
+    }
+    @media (max-width: 799px) {
+      .topbar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .menu {
+        width: 100%;
+      }
+      .menu a {
+        flex: 1 1 auto;
+        min-width: 120px;
+      }
+      .footer {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+    @media (min-width: 800px) {
+      .hero,
+      .story,
+      .details,
+      .footer {
+        padding-left: 34px;
+        padding-right: 34px;
+      }
+      .hero-grid {
+        grid-template-columns: 1.02fr .98fr;
+      }
+      .story-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .detail-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>About the Creator</h1>
-    </header>
-    <div class="content">
-        <h2>A Journey of Innovation and Impact</h2>
-        <p>Leo Varela’s story is one of curiosity, perseverance, and a relentless pursuit of bridging technology with humanity. From humble beginnings as a technology enthusiast to becoming a driving force in the world of technical implementations and product innovation, Leo has consistently turned challenges into opportunities and ideas into impactful solutions.</p>
-        
-        <h2>A Visionary Leader</h2>
-        <p>With over 10 years of experience in the technology space, Leo has mastered the art of crafting solutions that make complex systems accessible to everyone. Whether it’s designing cutting-edge systems, streamlining processes, or mentoring teams, his ability to translate technical jargon into actionable strategies has made him a trusted name in the industry.</p>
-        
-        <h2>Breaking Barriers</h2>
-        <p>Leo’s expertise spans across payment technologies, open banking, and API-driven connectivity. He has been instrumental in creating innovative frameworks that have redefined how businesses operate globally. By pushing boundaries and fostering collaboration, Leo has empowered organizations to embrace digital transformation with confidence.</p>
-        
-        <h2>A Passion for Growth</h2>
-        <p>Beyond his technical acumen, Leo is a natural leader who thrives on helping others succeed. He has trained and mentored teams, led international expansion projects, and built partnerships that have spanned continents. His work has left a lasting impact, not just on businesses, but on the people behind them.</p>
-        
-        <h2>Always Looking Forward</h2>
-        <p>For Leo, success isn’t just about solving problems today—it’s about shaping the future. With a deep passion for innovation and a commitment to excellence, he continues to chart new paths in the ever-evolving landscape of technology.</p>
-        
-        <h2>Get in Touch</h2>
-        <p>If you’d like to connect with Leo or learn more about his work, you can reach him via:</p>
-        <ul>
-            <li>Email: <a href="mailto:me@leo-varela.com">me@leo-varela.com</a></li>
-            <li>LinkedIn: <a href="https://linkedin.com/in/leovarela" target="_blank">linkedin.com/in/leovarela</a></li>
-        </ul>
-    </div>
-    <footer>
-        <p>© 2025 Leo Varela. Empowering technology, inspiring change.</p>
+  <div class="orb"></div>
+  <div class="shell">
+    <section class="hero">
+      <div class="topbar">
+        <div class="eyebrow">About · Leo Varela</div>
+        <nav class="menu" aria-label="Site navigation">
+          <a href="/">Home</a>
+          <a class="primary" href="/about">About</a>
+          <a href="/404-c">404</a>
+        </nav>
+      </div>
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1>Building signal out of mystery</h1>
+          <p>Leo Varela moves through technology the way some people move through the night sky, always looking for the hidden structure behind what everyone else calls impossible.</p>
+          <p>He is drawn to the edge where systems, curiosity, and imagination meet, where advanced propulsion, quantum weirdness, black holes, and real-world product building can all belong to the same conversation.</p>
+          <div class="cta">
+            <a class="primary" href="mailto:info@leo-varela.com">Open a channel</a>
+            <a href="/404-c">Play Wormhole Snake</a>
+          </div>
+        </div>
+        <div class="hero-media">
+          <img src="/assets/about-leo-ufo.jpg" alt="Leo Varela standing beside a futuristic spacecraft at night">
+        </div>
+      </div>
+    </section>
+
+    <section class="story">
+      <div class="story-grid">
+        <article class="panel">
+          <h2>The origin story</h2>
+          <p>Some people treat technology like a toolbox. Leo treats it like a map of hidden forces. He has spent years translating complex systems into something sharper, more human, and more useful, always chasing clarity without losing the wonder.</p>
+        </article>
+        <article class="panel">
+          <h3>The operating mode</h3>
+          <p>His work lives at the intersection of execution and vision. He can step into the machinery of platforms, APIs, payments, and product infrastructure, then zoom back out to ask the bigger question, where is this all actually taking us?</p>
+        </article>
+        <article class="panel">
+          <h3>The obsession</h3>
+          <p>Space, anomalous craft, gravity, advanced propulsion, and the strange frontier between physics and myth are not side interests here. They are part of the same instinct, the drive to explore what lies beyond the obvious and build toward it with discipline.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="details">
+      <div class="detail-grid">
+        <div class="detail">
+          <strong>What he builds</strong>
+          <span>Elegant digital systems, practical experiments, cleaner interfaces, and product environments that feel intentional rather than accidental.</span>
+        </div>
+        <div class="detail">
+          <strong>What he believes</strong>
+          <span>The future belongs to people who can stay rational without losing imagination, and who can hold rigor and wonder in the same frame.</span>
+        </div>
+        <div class="detail">
+          <strong>What comes next</strong>
+          <span>A more refined public presence, shaped around signal, curiosity, and a distinctly cosmic design language.</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>Signal, systems, and the long road toward stranger horizons.</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="mailto:info@leo-varela.com">Contact</a>
+      </div>
     </footer>
+  </div>
 </body>
 </html>
