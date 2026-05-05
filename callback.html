@@ -587,6 +587,7 @@
     const leaderboardForm = document.getElementById('leaderboard-form');
     const playerNameInput = document.getElementById('player-name');
     const leaderboardKey = 'wormhole-snake-top5';
+    const leaderboardApi = '/api/leaderboard';
     const gridSize = 18;
     const tileCount = canvas.width / gridSize;
 
@@ -599,7 +600,7 @@
     let pulse = 0;
     let pendingLeaderboardScore = null;
 
-    function loadLeaderboard() {
+    function loadLocalLeaderboard() {
       try {
         const raw = localStorage.getItem(leaderboardKey);
         return raw ? JSON.parse(raw) : [];
@@ -608,12 +609,46 @@
       }
     }
 
-    function saveLeaderboard(entries) {
+    function saveLocalLeaderboard(entries) {
       localStorage.setItem(leaderboardKey, JSON.stringify(entries.slice(0, 5)));
     }
 
-    function renderLeaderboard() {
-      const entries = loadLeaderboard();
+    async function fetchSharedLeaderboard() {
+      try {
+        const response = await fetch(leaderboardApi, { cache: 'no-store' });
+        if (!response.ok) throw new Error('request failed');
+        const data = await response.json();
+        const scores = Array.isArray(data?.scores) ? data.scores : [];
+        saveLocalLeaderboard(scores);
+        return scores;
+      } catch (e) {
+        return loadLocalLeaderboard();
+      }
+    }
+
+    async function submitSharedScore(name, score) {
+      try {
+        const response = await fetch(leaderboardApi, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, score })
+        });
+        if (!response.ok) throw new Error('submit failed');
+        const data = await response.json();
+        const scores = Array.isArray(data?.scores) ? data.scores : [];
+        saveLocalLeaderboard(scores);
+        return scores;
+      } catch (e) {
+        const entries = loadLocalLeaderboard();
+        entries.push({ name, score });
+        entries.sort((a, b) => b.score - a.score);
+        const top5 = entries.slice(0, 5);
+        saveLocalLeaderboard(top5);
+        return top5;
+      }
+    }
+
+    function renderLeaderboard(entries) {
       bestScoreEl.textContent = entries[0]?.score ?? 0;
       if (!entries.length) {
         leaderboardList.innerHTML = '<li><strong>No scores yet</strong></li>';
@@ -622,8 +657,14 @@
       leaderboardList.innerHTML = entries.map(entry => `<li><strong>${entry.name}</strong> · ${entry.score}</li>`).join('');
     }
 
-    function qualifiesForLeaderboard(value) {
-      const entries = loadLeaderboard();
+    async function refreshLeaderboard() {
+      const entries = await fetchSharedLeaderboard();
+      renderLeaderboard(entries);
+      return entries;
+    }
+
+    async function qualifiesForLeaderboard(value) {
+      const entries = await fetchSharedLeaderboard();
       if (value <= 0) return false;
       if (entries.length < 5) return true;
       return value > entries[entries.length - 1].score;
@@ -633,11 +674,11 @@
       pendingLeaderboardScore = value;
       leaderboardForm.style.display = 'block';
       playerNameInput.value = '';
-      playerNameInput.focus();
+      requestAnimationFrame(() => playerNameInput.focus());
     }
 
-    function hideLeaderboardForm() {
-      pendingLeaderboardScore = null;
+    function hideLeaderboardForm(clearScore = true) {
+      if (clearScore) pendingLeaderboardScore = null;
       leaderboardForm.style.display = 'none';
     }
 
@@ -663,7 +704,7 @@
       gameOver = false;
       pulse = 0;
       scoreEl.textContent = score;
-      hideLeaderboardForm();
+      hideLeaderboardForm(false);
       placeFood();
       draw();
     }
@@ -747,6 +788,8 @@
       draw();
       if (qualifiesForLeaderboard(score)) {
         showLeaderboardForm(score);
+      } else {
+        hideLeaderboardForm();
       }
     }
 
@@ -782,6 +825,7 @@
 
     leaderboardForm.addEventListener('submit', (event) => {
       event.preventDefault();
+      if (pendingLeaderboardScore === null) return;
       const name = playerNameInput.value.trim() || 'Anonymous';
       const entries = loadLeaderboard();
       entries.push({ name, score: pendingLeaderboardScore });
@@ -809,9 +853,9 @@
       button.addEventListener('click', handler);
     });
 
-    window.onload = function () {
+    window.onload = async function () {
       displayQueryParams();
-      renderLeaderboard();
+      await refreshLeaderboard();
       resetGame();
       setInterval(tick, 96);
     };
