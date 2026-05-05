@@ -1,396 +1,398 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Callback Page</title>
-    <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
-            color: #2d3748;
-            text-align: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        header {
-            background: linear-gradient(90deg, #1a365d 0%, #2c5282 100%);
-            color: #fff;
-            padding: 25px 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: -0.5px;
-        }
-        .main {
-            max-width: 900px;
-            margin: 40px auto;
-        }
-        .main h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #2d3748;
-        }
-        .main p {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #4a5568;
-        }
-        .query-parameters, .status-message {
-            margin-top: 30px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            text-align: left;
-            transition: transform 0.2s ease;
-        }
-        .query-parameters:hover, .status-message:hover {
-            transform: translateY(-2px);
-        }
-        .query-parameters h3, .status-message h3 {
-            color: #2d3748;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-        .json-container {
-            background: #1a202c;
-            color: #a0aec0;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Monaco', 'Consolas', monospace;
-            line-height: 1.5;
-        }
-        .json-key {
-            color: #63b3ed;
-        }
-        .json-string {
-            color: #68d391;
-        }
-        .json-number {
-            color: #f6ad55;
-        }
-        .status-message {
-            display: none;
-            text-align: center;
-        }
-        .status-message.processing {
-            background: #fefcbf;
-        }
-        .status-message.success {
-            background: #c6f6d5;
-        }
-        .status-message.failure {
-            background: #fed7d7;
-        }
-        .status-icon {
-            margin-bottom: 15px;
-        }
-        .status-icon svg {
-            width: 48px;
-            height: 48px;
-            stroke-width: 1.5;
-        }
-        .processing .status-icon svg {
-            color: #d69e2e;
-        }
-        .success .status-icon svg {
-            color: #48bb78;
-        }
-        .failure .status-icon svg {
-            color: #f56565;
-        }
-        
-        /* Game styles */
-        .game-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 50vh;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin: 20px auto;
-            overflow: hidden;
-            display: none;
-        }
-        .alien {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #2c5282;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .instructions {
-            margin: 20px 0;
-        }
-        .instructions p {
-            color: #4a5568;
-            font-size: 1rem;
-        }
-        .timer {
-            font-size: 1.2rem;
-            color: #2d3748;
-        }
-        .start-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background: #2c5282;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .start-button:hover {
-            background: #1a365d;
-        }
-        .scoreboard {
-            font-size: 1.2rem;
-            color: #2d3748;
-            margin-top: 20px;
-        }
-        
-        footer {
-            margin-top: 60px;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: #718096;
-        }
-        @media(max-width: 600px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            .main h2 {
-                font-size: 1.5rem;
-            }
-            .query-parameters {
-                padding: 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Callback · Leo Varela</title>
+  <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg: #04050b;
+      --bg-2: #111329;
+      --text: #f7f9ff;
+      --muted: #a3aed1;
+      --blue: #7ca8ff;
+      --violet: #a16bff;
+      --cyan: #8de7ff;
+      --green: #8fffd0;
+      --red: #ff9faa;
+      --amber: #ffd88c;
+      --line: rgba(255,255,255,0.12);
+      --line-strong: rgba(124,168,255,0.24);
+      --panel: rgba(9, 10, 22, 0.68);
+      --panel-2: rgba(255,255,255,0.03);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 20%, rgba(161,107,255,0.22), transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(124,168,255,0.18), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .orb {
+      position: fixed;
+      inset: auto auto 10% 8%;
+      width: min(42vw, 420px);
+      height: min(42vw, 420px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,168,255,0.18) 0%, rgba(124,168,255,0.02) 45%, transparent 68%);
+      filter: blur(18px);
+      pointer-events: none;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .panel,
+    .footer {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+      border-radius: 28px;
+    }
+
+    .panel {
+      padding: 28px 20px 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .menu {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .menu a,
+    .action-link {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: rgba(255,255,255,0.03);
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .menu a:hover,
+    .menu a:focus-visible,
+    .action-link:hover,
+    .action-link:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,0.06);
+      outline: none;
+    }
+
+    .menu a.primary,
+    .action-link.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      color: #07111f;
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2.5rem, 9vw, 4.6rem);
+      line-height: .94;
+      letter-spacing: -.05em;
+    }
+
+    .hero p {
+      margin: 0 0 12px;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .status-message {
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 20px 18px;
+      background: var(--panel-2);
+      margin-top: 20px;
+    }
+
+    .status-message h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .status-message.processing { border-color: rgba(255,216,140,0.28); }
+    .status-message.processing h3 { color: var(--amber); }
+    .status-message.success { border-color: rgba(143,255,208,0.24); }
+    .status-message.success h3 { color: var(--green); }
+    .status-message.failure { border-color: rgba(255,159,170,0.24); }
+    .status-message.failure h3 { color: var(--red); }
+
+    .sections {
+      display: grid;
+      gap: 18px;
+      margin-top: 26px;
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      padding: 22px 18px;
+      background: var(--panel-2);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .json-container {
+      background: rgba(4, 8, 20, 0.92);
+      color: #d3def7;
+      padding: 18px;
+      border-radius: 18px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.5;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .json-key { color: #8de7ff; }
+    .json-string { color: #b8a3ff; }
+    .json-number { color: #ffd88c; }
+    .json-boolean { color: #8fffd0; }
+    .json-null { color: #ff9faa; }
+
+    .footer {
+      margin-top: 22px;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--text);
+      border-bottom-color: rgba(255,255,255,0.28);
+      outline: none;
+    }
+
+    @media (max-width: 799px) {
+      .topbar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .menu {
+        width: 100%;
+      }
+      .menu a {
+        flex: 1 1 auto;
+        min-width: 120px;
+      }
+      .footer {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 800px) {
+      .panel,
+      .footer {
+        padding-left: 34px;
+        padding-right: 34px;
+      }
+      .hero {
+        grid-template-columns: 1.1fr .9fr;
+      }
+      .sections {
+        grid-template-columns: 1.1fr .9fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Callback</h1>
-    </header>
-    <section class="main">
-        <div class="status-message processing">
-            <div class="status-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 12L3 3l3.5 19L12 15l4 4 6-6-4-4 4-4z"/>
-                </svg>
-            </div>
-            <h3>Your payment is being processed by the bank.<br> Please wait for a webhook or poll to receive a final status.</h3>
-        </div>
+  <div class="orb"></div>
+  <div class="shell">
+    <section class="panel">
+      <div class="topbar">
+        <div class="eyebrow">Callback · Signal return</div>
+        <nav class="menu" aria-label="Site navigation">
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a class="primary" href="/callback.html">Callback</a>
+        </nav>
+      </div>
 
-        <div class="status-message success">
-            <div class="status-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                </svg>
-            </div>
-            <h3>Hooray! Successful payment</h3>
-        </div>
+      <div class="hero">
+        <div>
+          <h1>Callback received</h1>
+          <p>This endpoint is where payment state comes back into view. If a transfer is still in orbit, you will see it here first.</p>
+          <p>Useful for checking status, verifying query parameters, and confirming what the bank returned during the flow.</p>
 
-        <div class="status-message failure">
-            <div class="status-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="15" y1="9" x2="9" y2="15"/>
-                    <line x1="9" y1="9" x2="15" y2="15"/>
-                </svg>
-            </div>
-            <h3>So sad :( Your payment has been declined</h3>
-        </div>
+          <div class="status-message processing">
+            <h3>Your payment is being processed by the bank. Please wait for the final signal.</h3>
+          </div>
 
-        <div class="query-parameters">
-            <h3>Parameters</h3>
-        <div id="parameters" class="json-container">No parameters found</div>
-        </div>
+          <div class="status-message success">
+            <h3>Payment successful. The transfer landed cleanly.</h3>
+          </div>
 
-        <!-- Game Section -->
-        <div style="margin-top: 60px;">
-            <h2>Bored at work? Play Alien Catcher</h2>
-            <div class="instructions">
-                <p>Click the alien as many times as possible within 60 seconds. The alien will move faster as you score higher!</p>
-            </div>
-            <button class="start-button" id="start-button">Start Game</button>
-            <div class="timer">
-                Time Remaining: <span id="timer">60</span> seconds
-            </div>
-            <div class="game-container" id="game-container">
-                <div class="alien" id="alien">👾</div>
-            </div>
-            <div class="scoreboard">
-                Score: <span id="score">0</span>
-            </div>
+          <div class="status-message failure">
+            <h3>Payment failed. The transfer did not complete.</h3>
+          </div>
         </div>
+        <div class="card">
+          <h2>Status logic</h2>
+          <p>This page automatically reads query parameters from the URL and maps transfer states into human-readable outcomes.</p>
+          <a class="action-link" href="/404-c">View the new 404 system</a>
+        </div>
+      </div>
+
+      <div class="sections">
+        <section class="card">
+          <h2>Parameters</h2>
+          <div id="parameters" class="json-container">No parameters found</div>
+        </section>
+        <section class="card">
+          <h2>How to use this page</h2>
+          <p>Append callback query parameters to the URL to inspect the payload and preview how payment states are presented.</p>
+          <p>For example, a `transfer-status` value of `PROCESSING`, `SUCCESS`, or a failure variant will toggle the corresponding status panel.</p>
+        </section>
+      </div>
     </section>
-    <footer>
-        <p>© 2025 Leo Varela. Exploring the cosmos one call at a time.</p>
+
+    <footer class="footer">
+      <div>Tracing payment signals across the edge of the system.</div>
+      <div class="footer-links">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+      </div>
     </footer>
-    <script>
-        // Original callback page script
-        function syntaxHighlight(json) {
-            if (typeof json !== 'string') {
-                json = JSON.stringify(json, undefined, 2);
-            }
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                let cls = 'json-number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'json-key';
-                    } else {
-                        cls = 'json-string';
-                    }
-                } else if (/true|false/.test(match)) {
-                    cls = 'json-boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'json-null';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
+  </div>
+
+  <script>
+    function syntaxHighlight(json) {
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+          } else {
+            cls = 'json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
         }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
 
-        function displayQueryParams() {
-            const params = new URLSearchParams(window.location.search);
-            const paramDiv = document.getElementById('parameters');
-            
-            if (params.toString() === "") {
-                paramDiv.innerHTML = "No query parameters found in the URL.";
-            } else {
-                const paramsObject = {};
-                params.forEach((value, key) => {
-                    try {
-                        paramsObject[key] = JSON.parse(value);
-                    } catch (e) {
-                        paramsObject[key] = value;
-                    }
-                });
-                
-                paramDiv.innerHTML = `<pre>${syntaxHighlight(paramsObject)}</pre>`;
-            }
+    function displayQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      const paramDiv = document.getElementById('parameters');
 
-            const transferStatus = params.get('transfer-status');
-            const processingMessage = document.querySelector('.status-message.processing');
-            const successMessage = document.querySelector('.status-message.success');
-            const failureMessage = document.querySelector('.status-message.failure');
-
-            processingMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-            failureMessage.style.display = 'none';
-
-            if (transferStatus === 'PROCESSING') {
-                processingMessage.style.display = 'block';
-            } else if (transferStatus === 'SUCCESS') {
-                successMessage.style.display = 'block';
-            } else if (['FAILURE_DECLINED', 'FAILURE_CANCELED', 'FAILURE_GENERIC'].includes(transferStatus)) {
-                failureMessage.style.display = 'block';
-            }
-        }
-
-        // Game script
-        const alien = document.getElementById('alien');
-        const gameContainer = document.getElementById('game-container');
-        const scoreDisplay = document.getElementById('score');
-        const timerDisplay = document.getElementById('timer');
-        const startButton = document.getElementById('start-button');
-
-        let score = 0;
-        let speed = 2000;
-        let alienInterval;
-        let timerInterval;
-        let timeRemaining = 60;
-
-        function moveAlien() {
-            const containerRect = gameContainer.getBoundingClientRect();
-            const alienSize = alien.offsetWidth;
-            const maxX = containerRect.width - alienSize;
-            const maxY = containerRect.height - alienSize;
-
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
-
-            alien.style.left = `${randomX}px`;
-            alien.style.top = `${randomY}px`;
-        }
-
-        function startAlienMovement() {
-            clearInterval(alienInterval);
-            alienInterval = setInterval(moveAlien, speed);
-        }
-
-        alien.addEventListener('click', () => {
-            score++;
-            scoreDisplay.textContent = score;
-
-            if (speed > 500) {
-                speed -= 100;
-            }
-
-            moveAlien();
-            startAlienMovement();
+      if (params.toString() === '') {
+        paramDiv.innerHTML = 'No query parameters found in the URL.';
+      } else {
+        const paramsObject = {};
+        params.forEach((value, key) => {
+          try {
+            paramsObject[key] = JSON.parse(value);
+          } catch (e) {
+            paramsObject[key] = value;
+          }
         });
+        paramDiv.innerHTML = `<pre>${syntaxHighlight(paramsObject)}</pre>`;
+      }
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timeRemaining--;
-                timerDisplay.textContent = timeRemaining;
-                if (timeRemaining <= 0) {
-                    endGame();
-                }
-            }, 1000);
-        }
+      const transferStatus = params.get('transfer-status');
+      const processingMessage = document.querySelector('.status-message.processing');
+      const successMessage = document.querySelector('.status-message.success');
+      const failureMessage = document.querySelector('.status-message.failure');
 
-        function endGame() {
-            clearInterval(alienInterval);
-            clearInterval(timerInterval);
-            alien.style.pointerEvents = 'none';
-            alert(`Game Over! Your final score is ${score}`);
-        }
+      processingMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      failureMessage.style.display = 'none';
 
-        startButton.addEventListener('click', () => {
-            score = 0;
-            scoreDisplay.textContent = score;
-            speed = 2000;
-            timeRemaining = 60;
-            timerDisplay.textContent = timeRemaining;
-            alien.style.pointerEvents = 'auto';
-            gameContainer.style.display = 'block';
-            startAlienMovement();
-            startTimer();
-        });
+      if (transferStatus === 'PROCESSING') {
+        processingMessage.style.display = 'block';
+      } else if (transferStatus === 'SUCCESS') {
+        successMessage.style.display = 'block';
+      } else if (['FAILURE_DECLINED', 'FAILURE_CANCELED', 'FAILURE_GENERIC'].includes(transferStatus)) {
+        failureMessage.style.display = 'block';
+      }
+    }
 
-        // Initialize the page
-        window.onload = function() {
-            displayQueryParams();
-        };
-    </script>
+    window.onload = function () {
+      displayQueryParams();
+    };
+  </script>
 </body>
 </html>
