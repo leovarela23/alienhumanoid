@@ -48,7 +48,7 @@
             margin-bottom: 20px;
             color: #4a5568;
         }
-        .query-parameters {
+        .query-parameters, .status-message {
             margin-top: 30px;
             background: #ffffff;
             padding: 30px;
@@ -57,10 +57,10 @@
             text-align: left;
             transition: transform 0.2s ease;
         }
-        .query-parameters:hover {
+        .query-parameters:hover, .status-message:hover {
             transform: translateY(-2px);
         }
-        .query-parameters h3 {
+        .query-parameters h3, .status-message h3 {
             color: #2d3748;
             margin-bottom: 20px;
             font-size: 1.3rem;
@@ -85,6 +85,96 @@
         .json-number {
             color: #f6ad55;
         }
+        .status-message {
+            display: none;
+            text-align: center;
+        }
+        .status-message.processing {
+            background: #fefcbf;
+        }
+        .status-message.success {
+            background: #c6f6d5;
+        }
+        .status-message.failure {
+            background: #fed7d7;
+        }
+        .status-icon {
+            margin-bottom: 15px;
+        }
+        .status-icon svg {
+            width: 48px;
+            height: 48px;
+            stroke-width: 1.5;
+        }
+        .processing .status-icon svg {
+            color: #d69e2e;
+        }
+        .success .status-icon svg {
+            color: #48bb78;
+        }
+        .failure .status-icon svg {
+            color: #f56565;
+        }
+        
+        /* Game styles */
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 50vh;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin: 20px auto;
+            overflow: hidden;
+            display: none;
+        }
+        .alien {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #2c5282;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .instructions {
+            margin: 20px 0;
+        }
+        .instructions p {
+            color: #4a5568;
+            font-size: 1rem;
+        }
+        .timer {
+            font-size: 1.2rem;
+            color: #2d3748;
+        }
+        .start-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: #2c5282;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .start-button:hover {
+            background: #1a365d;
+        }
+        .scoreboard {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-top: 20px;
+        }
+        
         footer {
             margin-top: 60px;
             padding: 20px;
@@ -109,18 +199,63 @@
         <h1>Callback</h1>
     </header>
     <section class="main">
-        <h2>It looks like you just completed a payment</h2>
-        <p>Or maybe not</p>
+        <div class="status-message processing">
+            <div class="status-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 12L3 3l3.5 19L12 15l4 4 6-6-4-4 4-4z"/>
+                </svg>
+            </div>
+            <h3>Your payment is being processed by the bank.<br> Please wait for a webhook or poll to receive a final status.</h3>
+        </div>
+
+        <div class="status-message success">
+            <div class="status-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+            </div>
+            <h3>Hooray! Successful payment</h3>
+        </div>
+
+        <div class="status-message failure">
+            <div class="status-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+            </div>
+            <h3>So sad :( Your payment has been declined</h3>
+        </div>
+
         <div class="query-parameters">
-            <h3>Callback parameters</h3>
-            <div id="parameters" class="json-container">No parameters found</div>
+            <h3>Parameters</h3>
+        <div id="parameters" class="json-container">No parameters found</div>
+        </div>
+
+        <!-- Game Section -->
+        <div style="margin-top: 60px;">
+            <h2>Bored at work? Play Alien Catcher</h2>
+            <div class="instructions">
+                <p>Click the alien as many times as possible within 60 seconds. The alien will move faster as you score higher!</p>
+            </div>
+            <button class="start-button" id="start-button">Start Game</button>
+            <div class="timer">
+                Time Remaining: <span id="timer">60</span> seconds
+            </div>
+            <div class="game-container" id="game-container">
+                <div class="alien" id="alien">👾</div>
+            </div>
+            <div class="scoreboard">
+                Score: <span id="score">0</span>
+            </div>
         </div>
     </section>
     <footer>
-        <p>© 2025 Leo Varela. Exploring the cosmos one story at a time.</p>
+        <p>© 2025 Leo Varela. Exploring the cosmos one call at a time.</p>
     </footer>
     <script>
-        // Function to syntax highlight JSON
+        // Original callback page script
         function syntaxHighlight(json) {
             if (typeof json !== 'string') {
                 json = JSON.stringify(json, undefined, 2);
@@ -143,7 +278,6 @@
             });
         }
 
-        // Function to get and format query string parameters
         function displayQueryParams() {
             const params = new URLSearchParams(window.location.search);
             const paramDiv = document.getElementById('parameters');
@@ -153,7 +287,6 @@
             } else {
                 const paramsObject = {};
                 params.forEach((value, key) => {
-                    // Try to parse the value as JSON if possible
                     try {
                         paramsObject[key] = JSON.parse(value);
                     } catch (e) {
@@ -163,10 +296,101 @@
                 
                 paramDiv.innerHTML = `<pre>${syntaxHighlight(paramsObject)}</pre>`;
             }
+
+            const transferStatus = params.get('transfer-status');
+            const processingMessage = document.querySelector('.status-message.processing');
+            const successMessage = document.querySelector('.status-message.success');
+            const failureMessage = document.querySelector('.status-message.failure');
+
+            processingMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            failureMessage.style.display = 'none';
+
+            if (transferStatus === 'PROCESSING') {
+                processingMessage.style.display = 'block';
+            } else if (transferStatus === 'SUCCESS') {
+                successMessage.style.display = 'block';
+            } else if (['FAILURE_DECLINED', 'FAILURE_CANCELED', 'FAILURE_GENERIC'].includes(transferStatus)) {
+                failureMessage.style.display = 'block';
+            }
         }
 
-        // Call the function to display parameters on page load
-        window.onload = displayQueryParams;
+        // Game script
+        const alien = document.getElementById('alien');
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const startButton = document.getElementById('start-button');
+
+        let score = 0;
+        let speed = 2000;
+        let alienInterval;
+        let timerInterval;
+        let timeRemaining = 60;
+
+        function moveAlien() {
+            const containerRect = gameContainer.getBoundingClientRect();
+            const alienSize = alien.offsetWidth;
+            const maxX = containerRect.width - alienSize;
+            const maxY = containerRect.height - alienSize;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            alien.style.left = `${randomX}px`;
+            alien.style.top = `${randomY}px`;
+        }
+
+        function startAlienMovement() {
+            clearInterval(alienInterval);
+            alienInterval = setInterval(moveAlien, speed);
+        }
+
+        alien.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = score;
+
+            if (speed > 500) {
+                speed -= 100;
+            }
+
+            moveAlien();
+            startAlienMovement();
+        });
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerDisplay.textContent = timeRemaining;
+                if (timeRemaining <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            clearInterval(alienInterval);
+            clearInterval(timerInterval);
+            alien.style.pointerEvents = 'none';
+            alert(`Game Over! Your final score is ${score}`);
+        }
+
+        startButton.addEventListener('click', () => {
+            score = 0;
+            scoreDisplay.textContent = score;
+            speed = 2000;
+            timeRemaining = 60;
+            timerDisplay.textContent = timeRemaining;
+            alien.style.pointerEvents = 'auto';
+            gameContainer.style.display = 'block';
+            startAlienMovement();
+            startTimer();
+        });
+
+        // Initialize the page
+        window.onload = function() {
+            displayQueryParams();
+        };
     </script>
 </body>
 </html>
