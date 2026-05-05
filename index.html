@@ -547,6 +547,7 @@
       pendingLeaderboardScore = value;
       leaderboardForm.style.display = 'block';
       playerNameInput.value = '';
+      playerNameInput.blur();
       requestAnimationFrame(() => playerNameInput.focus());
     }
 
@@ -602,6 +603,7 @@
       flashControl(direction);
 
       if (gameOver) {
+        if (pendingLeaderboardScore !== null) return;
         resetGame();
         nextVelocity = proposed;
         velocity = proposed;
@@ -711,6 +713,7 @@
     });
 
     document.addEventListener('keydown', (event) => {
+      if (pendingLeaderboardScore !== null && event.target === playerNameInput) return;
       const key = event.key.toLowerCase();
       if (key === 'arrowup' || key === 'w') setDirection('up');
       else if (key === 'arrowdown' || key === 's') setDirection('down');
