@@ -17,8 +17,6 @@
       --line-strong: rgba(124,168,255,0.24);
       --panel: rgba(9, 10, 22, 0.62);
       --panel-2: rgba(255,255,255,0.03);
-      --snake: #b8a3ff;
-      --food: #8de7ff;
     }
 
     * { box-sizing: border-box; }
@@ -180,10 +178,15 @@
       background: linear-gradient(180deg, rgba(4, 8, 20, 0.95), rgba(11, 19, 40, 0.95));
       border: 1px solid var(--line);
       border-radius: 22px;
-      box-shadow:
-        inset 0 0 30px rgba(98, 217, 255, 0.06),
-        0 18px 40px rgba(0,0,0,.24);
+      box-shadow: inset 0 0 30px rgba(98, 217, 255, 0.06), 0 18px 40px rgba(0,0,0,.24);
       touch-action: none;
+    }
+
+    .side-panel {
+      display: grid;
+      gap: 18px;
+      width: 100%;
+      justify-items: center;
     }
 
     .controls {
@@ -219,6 +222,76 @@
     .left { grid-column: 1; grid-row: 2; }
     .down { grid-column: 2; grid-row: 2; }
     .right { grid-column: 3; grid-row: 2; }
+
+    .leaderboard {
+      width: min(100%, 320px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,0.03);
+      text-align: left;
+    }
+
+    .leaderboard h3 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .leaderboard ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    .leaderboard li {
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .leaderboard strong {
+      color: var(--text);
+    }
+
+    .leaderboard-form {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .leaderboard-form label {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .leaderboard-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .leaderboard-row input {
+      flex: 1 1 160px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    .leaderboard-row button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 700;
+      color: #07111f;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      cursor: pointer;
+    }
 
     .hint {
       margin-top: 14px;
@@ -291,7 +364,7 @@
         grid-template-columns: minmax(0, 360px) auto;
         justify-content: center;
       }
-      .controls {
+      .side-panel {
         align-self: center;
       }
     }
@@ -321,17 +394,32 @@
       <div class="game-header">
         <h2 class="game-title">Wormhole Snake</h2>
         <div class="score">Score: <span id="score">0</span></div>
+        <div class="score">Best score: <span id="best-score">0</span></div>
       </div>
       <div class="game-layout">
         <canvas id="snake" width="360" height="360" aria-label="Snake game"></canvas>
-        <div class="controls" aria-label="Touch controls for snake game">
-          <button class="up" data-dir="up" aria-label="Move up">↑</button>
-          <button class="left" data-dir="left" aria-label="Move left">←</button>
-          <button class="down" data-dir="down" aria-label="Move down">↓</button>
-          <button class="right" data-dir="right" aria-label="Move right">→</button>
+        <div class="side-panel">
+          <div class="controls" aria-label="Touch controls for snake game">
+            <button class="up" data-dir="up" aria-label="Move up">↑</button>
+            <button class="left" data-dir="left" aria-label="Move left">←</button>
+            <button class="down" data-dir="down" aria-label="Move down">↓</button>
+            <button class="right" data-dir="right" aria-label="Move right">→</button>
+          </div>
+
+          <div class="leaderboard">
+            <h3>Top scorers</h3>
+            <ol id="leaderboard-list"></ol>
+            <form id="leaderboard-form" class="leaderboard-form" style="display:none;">
+              <label for="player-name">You made the leaderboard</label>
+              <div class="leaderboard-row">
+                <input id="player-name" name="player-name" type="text" maxlength="24" placeholder="Your name" required>
+                <button type="submit">Save</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <p class="hint">Desktop: arrow keys or WASD. Mobile: use the touch controls. If you lose the signal, tap any direction to restart.</p>
+      <p class="hint">Desktop: arrow keys or WASD. Mobile: use the touch controls. If you lose the signal, tap a direction or press a key to restart.</p>
     </div>
 
     <footer class="footer">
@@ -348,7 +436,13 @@
     const canvas = document.getElementById('snake');
     const ctx = canvas.getContext('2d');
     const scoreEl = document.getElementById('score');
+    const bestScoreEl = document.getElementById('best-score');
     const controls = document.querySelectorAll('[data-dir]');
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const leaderboardForm = document.getElementById('leaderboard-form');
+    const playerNameInput = document.getElementById('player-name');
+    const leaderboardKey = 'wormhole-snake-top5';
+    const leaderboardApi = 'https://api.dev.leo-varela.com/leaderboard';
     const gridSize = 18;
     const tileCount = canvas.width / gridSize;
 
@@ -359,6 +453,95 @@
     let score;
     let gameOver;
     let pulse = 0;
+    let pendingLeaderboardScore = null;
+
+    function loadLocalLeaderboard() {
+      try {
+        const raw = localStorage.getItem(leaderboardKey);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalLeaderboard(entries) {
+      localStorage.setItem(leaderboardKey, JSON.stringify(entries.slice(0, 5)));
+    }
+
+    async function fetchSharedLeaderboard() {
+      try {
+        const response = await fetch(leaderboardApi, { cache: 'no-store' });
+        if (!response.ok) throw new Error('request failed');
+        const data = await response.json();
+        const scores = Array.isArray(data?.scores) ? data.scores : [];
+        saveLocalLeaderboard(scores);
+        return scores;
+      } catch (e) {
+        return loadLocalLeaderboard();
+      }
+    }
+
+    async function submitSharedScore(name, score) {
+      try {
+        const response = await fetch(leaderboardApi, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, score })
+        });
+        if (!response.ok) throw new Error('submit failed');
+        const data = await response.json();
+        const scores = Array.isArray(data?.scores) ? data.scores : [];
+        saveLocalLeaderboard(scores);
+        return scores;
+      } catch (e) {
+        const entries = loadLocalLeaderboard();
+        entries.push({ name, score });
+        entries.sort((a, b) => b.score - a.score);
+        const top5 = entries.slice(0, 5);
+        saveLocalLeaderboard(top5);
+        return top5;
+      }
+    }
+
+    function renderLeaderboard(entries) {
+      bestScoreEl.textContent = entries[0]?.score ?? 0;
+      if (!entries.length) {
+        leaderboardList.innerHTML = '<li><strong>No scores yet</strong></li>';
+        return;
+      }
+      leaderboardList.innerHTML = entries.map(entry => `<li><strong>${entry.name}</strong> · ${entry.score}</li>`).join('');
+    }
+
+    async function refreshLeaderboard() {
+      const entries = await fetchSharedLeaderboard();
+      renderLeaderboard(entries);
+      return entries;
+    }
+
+    function qualifiesForEntries(entries, value) {
+      if (value <= 0) return false;
+      if (entries.length < 5) return true;
+      return value > entries[entries.length - 1].score;
+    }
+
+    async function qualifiesForLeaderboard(value) {
+      const localEntries = loadLocalLeaderboard();
+      if (qualifiesForEntries(localEntries, value)) return true;
+      const sharedEntries = await fetchSharedLeaderboard();
+      return qualifiesForEntries(sharedEntries, value);
+    }
+
+    function showLeaderboardForm(value) {
+      pendingLeaderboardScore = value;
+      leaderboardForm.style.display = 'block';
+      playerNameInput.value = '';
+      requestAnimationFrame(() => playerNameInput.focus());
+    }
+
+    function hideLeaderboardForm(clearScore = true) {
+      if (clearScore) pendingLeaderboardScore = null;
+      leaderboardForm.style.display = 'none';
+    }
 
     function randomCell() {
       return Math.floor(Math.random() * tileCount);
@@ -382,6 +565,7 @@
       gameOver = false;
       pulse = 0;
       scoreEl.textContent = score;
+      hideLeaderboardForm(false);
       placeFood();
       draw();
     }
@@ -460,6 +644,21 @@
       }
     }
 
+    async function endGame() {
+      gameOver = true;
+      draw();
+      const localEntries = loadLocalLeaderboard();
+      if (qualifiesForEntries(localEntries, score)) {
+        showLeaderboardForm(score);
+        return;
+      }
+      if (await qualifiesForLeaderboard(score)) {
+        showLeaderboardForm(score);
+      } else {
+        hideLeaderboardForm();
+      }
+    }
+
     function tick() {
       if (gameOver) {
         draw();
@@ -473,8 +672,7 @@
       };
 
       if (snake.some(part => part.x === head.x && part.y === head.y)) {
-        gameOver = true;
-        draw();
+        endGame();
         return;
       }
 
@@ -490,6 +688,15 @@
 
       draw();
     }
+
+    leaderboardForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (pendingLeaderboardScore === null) return;
+      const name = playerNameInput.value.trim() || 'Anonymous';
+      const scores = await submitSharedScore(name, pendingLeaderboardScore);
+      renderLeaderboard(scores);
+      hideLeaderboardForm();
+    });
 
     document.addEventListener('keydown', (event) => {
       const key = event.key.toLowerCase();
@@ -509,8 +716,11 @@
       button.addEventListener('click', handler);
     });
 
-    resetGame();
-    setInterval(tick, 96);
+    window.onload = async function () {
+      await refreshLeaderboard();
+      resetGame();
+      setInterval(tick, 96);
+    };
   </script>
 </body>
 </html>
