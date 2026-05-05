@@ -587,6 +587,7 @@
     const playerNameInput = document.getElementById('player-name');
     const leaderboardKey = 'wormhole-snake-top5';
     const leaderboardApi = 'https://api.dev.leo-varela.com/leaderboard';
+    const leaderboardEnabled = false;
     const gridSize = 18;
     const tileCount = canvas.width / gridSize;
 
@@ -613,6 +614,7 @@
     }
 
     async function fetchSharedLeaderboard() {
+      if (!leaderboardEnabled) return loadLocalLeaderboard();
       try {
         const response = await fetch(leaderboardApi, { cache: 'no-store' });
         if (!response.ok) throw new Error('request failed');
@@ -626,6 +628,14 @@
     }
 
     async function submitSharedScore(name, score) {
+      if (!leaderboardEnabled) {
+        const entries = loadLocalLeaderboard();
+        entries.push({ name, score });
+        entries.sort((a, b) => b.score - a.score);
+        const top5 = entries.slice(0, 5);
+        saveLocalLeaderboard(top5);
+        return top5;
+      }
       try {
         const response = await fetch(leaderboardApi, {
           method: 'POST',
