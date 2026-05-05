@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>404 C · Deep Space Minimal</title>
   <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
   <style>
@@ -14,6 +14,9 @@
       --blue: #7ca8ff;
       --violet: #a16bff;
       --line: rgba(255,255,255,0.12);
+      --panel: rgba(9, 10, 22, 0.62);
+      --snake: #b8a3ff;
+      --food: #8de7ff;
     }
     * { box-sizing: border-box; }
     body {
@@ -27,25 +30,27 @@
         linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
       display: grid;
       place-items: center;
-      padding: 32px;
+      padding: 20px;
+      overflow-x: hidden;
     }
     .orb {
-      position: absolute;
-      width: 520px;
-      height: 520px;
+      position: fixed;
+      width: min(70vw, 520px);
+      height: min(70vw, 520px);
       border-radius: 50%;
       background: radial-gradient(circle, rgba(124,168,255,0.20) 0%, rgba(124,168,255,0.02) 45%, transparent 65%);
       filter: blur(16px);
+      pointer-events: none;
     }
     .card {
       position: relative;
       z-index: 1;
-      width: min(760px, 100%);
+      width: min(860px, 100%);
       text-align: center;
-      padding: 56px 38px;
+      padding: 34px 20px 28px;
       border-radius: 28px;
       border: 1px solid var(--line);
-      background: rgba(9, 10, 22, 0.62);
+      background: var(--panel);
       backdrop-filter: blur(14px);
       box-shadow: 0 30px 80px rgba(0,0,0,.35);
     }
@@ -53,25 +58,25 @@
       color: var(--blue);
       text-transform: uppercase;
       letter-spacing: .15em;
-      font-size: .82rem;
+      font-size: .78rem;
       margin-bottom: 14px;
       font-weight: 700;
     }
     h1 {
       margin: 0 0 18px;
-      font-size: clamp(3rem, 10vw, 7rem);
+      font-size: clamp(2.8rem, 11vw, 7rem);
       letter-spacing: -.06em;
       line-height: .95;
     }
     p {
-      margin: 0 auto 16px;
+      margin: 0 auto 14px;
       max-width: 620px;
       color: var(--muted);
-      font-size: 1.06rem;
+      font-size: 1rem;
     }
     .tag {
       display: inline-block;
-      margin-top: 12px;
+      margin-top: 10px;
       padding: 10px 16px;
       border-radius: 999px;
       border: 1px solid rgba(161,107,255,0.32);
@@ -83,7 +88,7 @@
       justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 26px;
+      margin-top: 24px;
     }
     a {
       text-decoration: none;
@@ -98,6 +103,90 @@
       color: #07111f;
       font-weight: 700;
     }
+    .game-section {
+      margin-top: 30px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .game-title {
+      font-size: 1rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin: 0;
+    }
+    .score {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .game-layout {
+      display: grid;
+      gap: 18px;
+      align-items: start;
+      justify-items: center;
+    }
+    canvas {
+      width: min(100%, 360px);
+      height: auto;
+      aspect-ratio: 1;
+      display: block;
+      background: linear-gradient(180deg, rgba(4, 8, 20, 0.95), rgba(11, 19, 40, 0.95));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: inset 0 0 30px rgba(98, 217, 255, 0.06);
+      touch-action: none;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 64px);
+      grid-template-rows: repeat(3, 64px);
+      gap: 10px;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .controls button {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      touch-action: manipulation;
+    }
+    .controls button:active {
+      transform: scale(.97);
+      background: rgba(124,168,255,0.18);
+    }
+    .up { grid-column: 2; grid-row: 1; }
+    .left { grid-column: 1; grid-row: 2; }
+    .down { grid-column: 2; grid-row: 2; }
+    .right { grid-column: 3; grid-row: 2; }
+    .hint {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    @media (min-width: 760px) {
+      .card { padding: 52px 38px 34px; }
+      .game-layout {
+        grid-template-columns: minmax(0, 360px) auto;
+        justify-content: center;
+      }
+      .controls {
+        align-self: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -106,13 +195,185 @@
     <div class="eyebrow">404 concept C · Deep Space Minimal</div>
     <h1>Off map</h1>
     <p>This page slipped outside the known coordinates. No clutter, no gimmicks, just a polished dark-space aesthetic with a high-end editorial feel.</p>
-    <p>This is the cleanest and most premium-looking option, with a little less “console” and a little more “future-facing personal brand.”</p>
+    <p>This is the cleanest and most premium-looking option, with a little less console and a little more future-facing personal brand.</p>
     <div class="tag">Elegant · cosmic · modern</div>
     <div class="links">
       <a class="primary" href="/">Return to base</a>
       <a href="/404-a">View concept A</a>
       <a href="/404-b">View concept B</a>
     </div>
+
+    <div class="game-section">
+      <div class="game-header">
+        <h2 class="game-title">Nebula Snake</h2>
+        <div class="score">Score: <span id="score">0</span></div>
+      </div>
+      <div class="game-layout">
+        <canvas id="snake" width="360" height="360" aria-label="Snake game"></canvas>
+        <div class="controls" aria-label="Touch controls for snake game">
+          <button class="up" data-dir="up" aria-label="Move up">↑</button>
+          <button class="left" data-dir="left" aria-label="Move left">←</button>
+          <button class="down" data-dir="down" aria-label="Move down">↓</button>
+          <button class="right" data-dir="right" aria-label="Move right">→</button>
+        </div>
+      </div>
+      <p class="hint">Desktop: arrow keys or WASD. Mobile: use the touch controls. If you lose the signal, tap any direction to restart.</p>
+    </div>
   </section>
+
+  <script>
+    const canvas = document.getElementById('snake');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const controls = document.querySelectorAll('[data-dir]');
+    const gridSize = 18;
+    const tileCount = canvas.width / gridSize;
+
+    let snake;
+    let velocity;
+    let nextVelocity;
+    let food;
+    let score;
+    let gameOver;
+
+    function randomCell() {
+      return Math.floor(Math.random() * tileCount);
+    }
+
+    function placeFood() {
+      do {
+        food = { x: randomCell(), y: randomCell() };
+      } while (snake.some(part => part.x === food.x && part.y === food.y));
+    }
+
+    function resetGame() {
+      snake = [
+        { x: 10, y: 10 },
+        { x: 9, y: 10 },
+        { x: 8, y: 10 }
+      ];
+      velocity = { x: 1, y: 0 };
+      nextVelocity = { x: 1, y: 0 };
+      score = 0;
+      gameOver = false;
+      scoreEl.textContent = score;
+      placeFood();
+      draw();
+    }
+
+    function setDirection(direction) {
+      const map = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 }
+      };
+      const proposed = map[direction];
+      if (!proposed) return;
+
+      if (gameOver) {
+        resetGame();
+        nextVelocity = proposed;
+        velocity = proposed;
+        return;
+      }
+
+      if (proposed.x === -velocity.x && proposed.y === -velocity.y) return;
+      nextVelocity = proposed;
+    }
+
+    function drawCell(x, y, color, glow) {
+      const px = x * gridSize;
+      const py = y * gridSize;
+      ctx.fillStyle = color;
+      ctx.shadowBlur = glow;
+      ctx.shadowColor = color;
+      ctx.fillRect(px + 2, py + 2, gridSize - 4, gridSize - 4);
+      ctx.shadowBlur = 0;
+    }
+
+    function drawGrid() {
+      ctx.fillStyle = 'rgba(7, 10, 24, 0.95)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let x = 0; x < tileCount; x++) {
+        for (let y = 0; y < tileCount; y++) {
+          ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+          ctx.strokeRect(x * gridSize, y * gridSize, gridSize, gridSize);
+        }
+      }
+    }
+
+    function draw() {
+      drawGrid();
+      snake.forEach((part, index) => {
+        drawCell(part.x, part.y, index === 0 ? '#efe9ff' : '#b8a3ff', index === 0 ? 18 : 12);
+      });
+      drawCell(food.x, food.y, '#8de7ff', 16);
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(5, 8, 18, 0.72)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f7f9ff';
+        ctx.font = 'bold 28px Inter, sans-serif';
+        ctx.fillText('Signal lost', canvas.width / 2, canvas.height / 2 - 10);
+        ctx.font = '15px Inter, sans-serif';
+        ctx.fillStyle = '#a3aed1';
+        ctx.fillText('Tap a direction or press a key to restart', canvas.width / 2, canvas.height / 2 + 24);
+      }
+    }
+
+    function tick() {
+      if (gameOver) {
+        draw();
+        return;
+      }
+
+      velocity = nextVelocity;
+      const head = {
+        x: (snake[0].x + velocity.x + tileCount) % tileCount,
+        y: (snake[0].y + velocity.y + tileCount) % tileCount
+      };
+
+      if (snake.some(part => part.x === head.x && part.y === head.y)) {
+        gameOver = true;
+        draw();
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === food.x && head.y === food.y) {
+        score += 1;
+        scoreEl.textContent = score;
+        placeFood();
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (key === 'arrowup' || key === 'w') setDirection('up');
+      else if (key === 'arrowdown' || key === 's') setDirection('down');
+      else if (key === 'arrowleft' || key === 'a') setDirection('left');
+      else if (key === 'arrowright' || key === 'd') setDirection('right');
+    });
+
+    controls.forEach(button => {
+      const dir = button.dataset.dir;
+      const handler = (event) => {
+        event.preventDefault();
+        setDirection(dir);
+      };
+      button.addEventListener('pointerdown', handler);
+      button.addEventListener('click', handler);
+    });
+
+    resetGame();
+    setInterval(tick, 120);
+  </script>
 </body>
 </html>
