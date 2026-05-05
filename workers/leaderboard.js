@@ -15,7 +15,7 @@ export default {
     const key = 'wormhole-snake-top5';
 
     if (request.method === 'GET') {
-      const current = await env.LEADERBOARD_KV.get(key, 'json') || [];
+      const current = await env.KV.get(key, 'json') || [];
       return new Response(JSON.stringify({ scores: current }), { headers });
     }
 
@@ -33,11 +33,11 @@ export default {
         return new Response(JSON.stringify({ error: 'Invalid score' }), { status: 400, headers });
       }
 
-      const current = await env.LEADERBOARD_KV.get(key, 'json') || [];
+      const current = await env.KV.get(key, 'json') || [];
       current.push({ name, score: Math.floor(score) });
       current.sort((a, b) => b.score - a.score);
       const top5 = current.slice(0, 5);
-      await env.LEADERBOARD_KV.put(key, JSON.stringify(top5));
+      await env.KV.put(key, JSON.stringify(top5));
       return new Response(JSON.stringify({ scores: top5 }), { headers });
     }
 
