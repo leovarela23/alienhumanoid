@@ -662,11 +662,17 @@
       return entries;
     }
 
-    async function qualifiesForLeaderboard(value) {
-      const entries = await fetchSharedLeaderboard();
+    function qualifiesForEntries(entries, value) {
       if (value <= 0) return false;
       if (entries.length < 5) return true;
       return value > entries[entries.length - 1].score;
+    }
+
+    async function qualifiesForLeaderboard(value) {
+      const localEntries = loadLocalLeaderboard();
+      if (qualifiesForEntries(localEntries, value)) return true;
+      const sharedEntries = await fetchSharedLeaderboard();
+      return qualifiesForEntries(sharedEntries, value);
     }
 
     function showLeaderboardForm(value) {
