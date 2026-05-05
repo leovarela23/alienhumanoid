@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 C · Deep Space Minimal</title>
+  <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg: #04050b;
+      --bg-2: #111329;
+      --text: #f7f9ff;
+      --muted: #a3aed1;
+      --blue: #7ca8ff;
+      --violet: #a16bff;
+      --line: rgba(255,255,255,0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 80% 20%, rgba(161,107,255,0.22), transparent 20%),
+        radial-gradient(circle at 20% 80%, rgba(124,168,255,0.18), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+    .orb {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,168,255,0.20) 0%, rgba(124,168,255,0.02) 45%, transparent 65%);
+      filter: blur(16px);
+    }
+    .card {
+      position: relative;
+      z-index: 1;
+      width: min(760px, 100%);
+      text-align: center;
+      padding: 56px 38px;
+      border-radius: 28px;
+      border: 1px solid var(--line);
+      background: rgba(9, 10, 22, 0.62);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+    }
+    .eyebrow {
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: .82rem;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(3rem, 10vw, 7rem);
+      letter-spacing: -.06em;
+      line-height: .95;
+    }
+    p {
+      margin: 0 auto 16px;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 1.06rem;
+    }
+    .tag {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(161,107,255,0.32);
+      color: #d8c8ff;
+      background: rgba(161,107,255,0.08);
+    }
+    .links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+    a {
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 12px 18px;
+    }
+    a.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--blue), var(--violet));
+      color: #07111f;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="orb"></div>
+  <section class="card">
+    <div class="eyebrow">404 concept C · Deep Space Minimal</div>
+    <h1>Off map</h1>
+    <p>This page slipped outside the known coordinates. No clutter, no gimmicks, just a polished dark-space aesthetic with a high-end editorial feel.</p>
+    <p>This is the cleanest and most premium-looking option, with a little less “console” and a little more “future-facing personal brand.”</p>
+    <div class="tag">Elegant · cosmic · modern</div>
+    <div class="links">
+      <a class="primary" href="/">Return to base</a>
+      <a href="/404-a">View concept A</a>
+      <a href="/404-b">View concept B</a>
+    </div>
+  </section>
+</body>
+</html>
