@@ -1,12 +1,22 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const origin = request.headers.get('Origin');
+    const allowedOrigins = new Set([
+      'https://www.leo-varela.com',
+      'https://leo-varela.com',
+      'https://dev.leo-varela.com'
+    ]);
+    const corsOrigin = origin && allowedOrigins.has(origin) ? origin : null;
     const headers = {
-      'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
       'Content-Type': 'application/json; charset=utf-8'
     };
+    if (corsOrigin) {
+      headers['Access-Control-Allow-Origin'] = corsOrigin;
+      headers['Vary'] = 'Origin';
+    }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers });
