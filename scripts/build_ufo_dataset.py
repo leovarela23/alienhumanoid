@@ -4,7 +4,8 @@ from pathlib import Path
 
 ROOT = Path('/tmp/alienhumanoid-inspect')
 RAW = ROOT / 'data' / 'raw' / 'corgis-ufo-sightings.json'
-OUT = ROOT / 'data' / 'processed' / 'ufo-full.json'
+OUT_DIR = ROOT / 'data' / 'processed' / 'ufo'
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 with RAW.open() as f:
     rows = json.load(f)
@@ -78,6 +79,26 @@ for i, row in enumerate(rows):
         'description': description,
     })
 
-OUT.parent.mkdir(parents=True, exist_ok=True)
-OUT.write_text(json.dumps(items, separators=(',', ':')))
-print(f'wrote {len(items)} records to {OUT}')
+chunks = [items[: len(items) // 2], items[len(items) // 2 :]]
+
+manifest = {
+    'source': 'corgis',
+    'sourceName': 'CORGIS',
+    'totalRecords': len(items),
+    'chunks': []
+}
+
+for idx, chunk_items in enumerate(chunks, start=1):
+    filename = f'part-{idx}.json'
+    path = OUT_DIR / filename
+    payload = json.dumps(chunk_items, separators=(',', ':'))
+    path.write_text(payload)
+    manifest['chunks'].append({
+        'part': idx,
+        'file': f'/data/processed/ufo/{filename}',
+        'records': len(chunk_items),
+        'bytes': path.stat().st_size,
+    })
+
+(ROOT / 'data' / 'processed' / 'ufo-manifest.json').write_text(json.dumps(manifest, separators=(',', ':')))
+print(f"wrote {len(items)} records across {len(manifest['chunks'])} chunks")

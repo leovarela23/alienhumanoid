@@ -541,10 +541,21 @@
       }).addTo(state.map);
       state.markersLayer = L.layerGroup().addTo(state.map);
 
-      const response = await fetch('/data/processed/ufo-full.json', { cache: 'no-store' });
-      state.sightings = await response.json();
-      datasetStatus.textContent = `Loaded ${state.sightings.length.toLocaleString()} records`;
-      rerender();
+      const manifestResponse = await fetch('/data/processed/ufo-manifest.json', { cache: 'no-store' });
+      const manifest = await manifestResponse.json();
+      datasetStatus.textContent = `Loading ${manifest.totalRecords.toLocaleString()} records across ${manifest.chunks.length} chunks…`;
+
+      const loaded = [];
+      for (const chunk of manifest.chunks) {
+        const chunkResponse = await fetch(chunk.file, { cache: 'no-store' });
+        const chunkItems = await chunkResponse.json();
+        loaded.push(...chunkItems);
+        state.sightings = loaded.slice();
+        datasetStatus.textContent = `Loaded ${state.sightings.length.toLocaleString()} of ${manifest.totalRecords.toLocaleString()} records`;
+        rerender();
+      }
+
+      datasetStatus.textContent = `Loaded ${state.sightings.length.toLocaleString()} records across ${manifest.chunks.length} chunks`;
       state.map.on('moveend zoomend', rerender);
     }
 
