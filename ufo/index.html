@@ -359,7 +359,7 @@
         <div class="toolbar">
           <div>
             <h2 class="section-title">Map view</h2>
-            <div class="map-note">Real Leaflet map with full CORGIS dataset. Markers are viewport-limited for responsiveness.</div>
+            <div class="map-note">Real Leaflet map with full CORGIS dataset. Results show the 10 newest visible sightings.</div>
           </div>
           <div class="status-row">
             <span id="datasetStatus" class="meta">Loading dataset…</span>
@@ -393,7 +393,7 @@
       sightings: [],
       visibleList: [],
       viewportMarkersLimit: 1200,
-      resultsLimit: 250
+      resultsLimit: 10
     };
 
     const chips = Array.from(document.querySelectorAll('.chip'));
