@@ -426,7 +426,7 @@
         A real interactive world map prototype with visible source provenance, source filters, and room to grow into a multi-dataset sightings explorer.
       </p>
       <div class="cta">
-        <a href="/ufo/#leafletMap">Open the map</a>
+        <a href="#leafletMap">Open the map</a>
         <a href="https://corgis-edu.github.io/corgis/json/ufo_sightings/" target="_blank" rel="noreferrer">CORGIS reference</a>
         <a href="https://nuforc.org/" target="_blank" rel="noreferrer">NUFORC reference</a>
       </div>
@@ -512,22 +512,30 @@
       });
     }
 
+    function toSortTimestamp(value) {
+      const normalized = String(value || '').replace(' Pacific', '').trim().replace(' ', 'T');
+      const ts = Date.parse(normalized);
+      return Number.isNaN(ts) ? 0 : ts;
+    }
+
     function filteredSightings() {
-      return state.sightings.filter((item) => {
-        const sourceMatch = state.currentSource === 'all' || item.source === state.currentSource;
-        const q = state.currentQuery.trim().toLowerCase();
-        const haystack = [
-          item.sourceName,
-          item.city,
-          item.state,
-          item.country,
-          item.shape,
-          item.title,
-          item.description
-        ].join(' ').toLowerCase();
-        const queryMatch = !q || haystack.includes(q);
-        return sourceMatch && queryMatch;
-      });
+      return state.sightings
+        .filter((item) => {
+          const sourceMatch = state.currentSource === 'all' || item.source === state.currentSource;
+          const q = state.currentQuery.trim().toLowerCase();
+          const haystack = [
+            item.sourceName,
+            item.city,
+            item.state,
+            item.country,
+            item.shape,
+            item.title,
+            item.description
+          ].join(' ').toLowerCase();
+          const queryMatch = !q || haystack.includes(q);
+          return sourceMatch && queryMatch;
+        })
+        .sort((a, b) => toSortTimestamp(b.occurredAt) - toSortTimestamp(a.occurredAt));
     }
 
     function renderDetails(item) {
