@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>UFO Map · Leo Varela</title>
   <link rel="icon" href="/assets/alien.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
     :root {
       --bg: #04050b;
@@ -18,8 +19,6 @@
       --line-strong: rgba(124,168,255,0.24);
       --panel: rgba(9, 10, 22, 0.68);
       --panel-2: rgba(255,255,255,0.04);
-      --map-sea: #0a1022;
-      --map-land: rgba(255,255,255,0.035);
     }
 
     * { box-sizing: border-box; }
@@ -51,7 +50,7 @@
     .shell {
       position: relative;
       z-index: 1;
-      max-width: 1320px;
+      max-width: 1380px;
       margin: 0 auto;
     }
 
@@ -97,17 +96,16 @@
     .menu a,
     .cta a,
     .chip,
-    .control,
-    .popup-actions a,
-    .result button {
+    .search,
+    .result button,
+    .detail-link {
       text-decoration: none;
       color: var(--text);
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 11px 16px;
       background: rgba(255,255,255,0.03);
-      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, opacity 140ms ease;
-      cursor: pointer;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
       font: inherit;
     }
 
@@ -117,12 +115,11 @@
     .cta a:focus-visible,
     .chip:hover,
     .chip:focus-visible,
-    .control:hover,
-    .control:focus-visible,
-    .popup-actions a:hover,
-    .popup-actions a:focus-visible,
     .result button:hover,
-    .result button:focus-visible {
+    .result button:focus-visible,
+    .detail-link:hover,
+    .detail-link:focus-visible,
+    .search:focus-visible {
       transform: translateY(-1px);
       border-color: var(--line-strong);
       background: rgba(255,255,255,0.06);
@@ -145,11 +142,14 @@
       letter-spacing: -.05em;
     }
 
-    .hero p {
-      margin: 0 0 14px;
-      max-width: 780px;
+    .hero p,
+    .section-copy,
+    .meta,
+    .empty,
+    .detail-panel p,
+    .detail-panel li {
       color: var(--muted);
-      font-size: 1.02rem;
+      line-height: 1.65;
     }
 
     .cta {
@@ -174,7 +174,8 @@
     }
 
     .sidebar,
-    .detail-panel {
+    .detail-panel,
+    .map-panel {
       padding: 18px;
     }
 
@@ -186,108 +187,82 @@
       color: var(--blue);
     }
 
-    .section-copy,
-    .meta,
-    .empty,
-    .detail-panel p,
-    .detail-panel li {
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    .filters,
-    .legend,
-    .results {
+    .chips,
+    .legend-items,
+    .results,
+    .toolbar {
       display: grid;
       gap: 12px;
     }
 
-    .chips,
-    .legend-items,
+    .filter-row,
+    .legend-row,
     .toolbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
-    .chip {
-      padding: 10px 14px;
+    .search {
+      width: 100%;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
     }
 
-    .chip[data-source="all"].is-active {
-      background: linear-gradient(90deg, #dbe8ff, #a16bff);
-    }
-
-    .chip[data-source="corgis"] .dot,
-    .legend-dot.corgis,
-    .source-badge.corgis,
-    .marker.corgis {
-      background: var(--blue);
-      color: #03111d;
-    }
-
-    .chip[data-source="nuforc"] .dot,
-    .legend-dot.nuforc,
-    .source-badge.nuforc,
-    .marker.nuforc {
-      background: var(--orange);
-      color: #1d0f03;
-    }
-
-    .dot,
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 8px;
-      vertical-align: middle;
-      box-shadow: 0 0 18px currentColor;
-    }
+    .search::placeholder { color: #8f9bbf; }
 
     .legend-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       color: var(--muted);
       font-size: .95rem;
     }
 
-    .control {
-      border-radius: 14px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.04);
-      min-height: 44px;
+    .legend-dot,
+    .source-badge::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      flex: 0 0 auto;
     }
 
-    .search {
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      padding: 12px 14px;
-      font: inherit;
-    }
+    .legend-dot.corgis,
+    .source-badge.corgis::before { background: var(--blue); }
+    .legend-dot.nuforc,
+    .source-badge.nuforc::before { background: var(--orange); }
 
-    .search::placeholder { color: #8f9bbf; }
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: rgba(255,255,255,0.06);
+      width: fit-content;
+    }
 
     .result {
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: 18px;
       background: rgba(255,255,255,0.03);
       padding: 14px;
-      display: grid;
-      gap: 8px;
     }
 
     .result button {
       width: 100%;
-      border-radius: 18px;
-      text-align: left;
-      padding: 0;
       border: none;
+      padding: 0;
       background: transparent;
+      border-radius: 0;
+      text-align: left;
     }
 
     .result button:hover,
@@ -297,142 +272,77 @@
     }
 
     .result h3,
-    .detail-panel h2,
-    .popup h3 {
-      margin: 0;
+    .detail-panel h2 {
+      margin: 10px 0 8px;
       font-size: 1.05rem;
       color: var(--text);
     }
 
-    .source-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: .78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .result-meta,
-    .detail-grid,
-    .popup-meta {
-      display: grid;
-      gap: 6px;
-      color: var(--muted);
-      font-size: .95rem;
-    }
-
     .map-panel {
-      padding: 18px;
+      min-height: 700px;
       display: grid;
       gap: 14px;
-      min-height: 560px;
     }
 
-    .toolbar {
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .map-wrap {
-      position: relative;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.08);
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 22% 36%, rgba(99,217,255,0.05), transparent 16%),
-        radial-gradient(circle at 68% 28%, rgba(255,177,95,0.05), transparent 16%),
-        linear-gradient(180deg, rgba(4,7,16,.96), rgba(12,19,40,.96));
-      min-height: 470px;
-    }
-
-    .map-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle at 18% 32%, rgba(255,255,255,.05) 0 6%, transparent 6.5%),
-        radial-gradient(circle at 24% 36%, rgba(255,255,255,.035) 0 9%, transparent 9.5%),
-        radial-gradient(circle at 48% 30%, rgba(255,255,255,.04) 0 8%, transparent 8.5%),
-        radial-gradient(circle at 55% 34%, rgba(255,255,255,.03) 0 12%, transparent 12.5%),
-        radial-gradient(circle at 72% 38%, rgba(255,255,255,.035) 0 10%, transparent 10.5%),
-        radial-gradient(circle at 77% 43%, rgba(255,255,255,.025) 0 13%, transparent 13.5%),
-        radial-gradient(circle at 14% 68%, rgba(255,255,255,.03) 0 7%, transparent 7.5%),
-        radial-gradient(circle at 26% 71%, rgba(255,255,255,.025) 0 13%, transparent 13.5%),
-        radial-gradient(circle at 58% 66%, rgba(255,255,255,.03) 0 11%, transparent 11.5%),
-        radial-gradient(circle at 80% 66%, rgba(255,255,255,.02) 0 9%, transparent 9.5%);
-      opacity: .9;
-      pointer-events: none;
-    }
-
-    .gridlines {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size: calc(100% / 12) calc(100% / 6);
-      opacity: .28;
-      pointer-events: none;
-    }
-
-    .marker-layer {
-      position: relative;
+    #leafletMap {
       width: 100%;
-      min-height: 470px;
-    }
-
-    .marker {
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.85);
-      box-shadow: 0 0 0 8px rgba(255,255,255,.04), 0 0 22px currentColor;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-    }
-
-    .marker.is-active {
-      width: 24px;
-      height: 24px;
-      z-index: 3;
-    }
-
-    .popup {
-      position: absolute;
-      left: 18px;
-      bottom: 18px;
-      width: min(360px, calc(100% - 36px));
+      min-height: 620px;
       border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(5, 9, 20, 0.88);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 24px 60px rgba(0,0,0,.38);
-      padding: 18px;
-      display: none;
-      gap: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #091120;
     }
 
-    .popup.is-visible {
-      display: grid;
-    }
-
-    .popup-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .detail-panel {
-      min-height: 260px;
+    .map-note {
+      font-size: .92rem;
+      color: var(--muted);
     }
 
     .detail-grid {
+      display: grid;
+      gap: 8px;
       margin-top: 14px;
+      color: var(--muted);
     }
+
+    .detail-link {
+      display: inline-flex;
+      width: fit-content;
+      margin-top: 14px;
+      border-radius: 999px;
+    }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: rgba(5, 9, 20, 0.96);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 60px rgba(0,0,0,.38);
+    }
+
+    .leaflet-popup-content {
+      margin: 14px 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .popup-title {
+      margin: 10px 0 8px;
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .custom-marker {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 0 0 6px rgba(255,255,255,0.05), 0 0 18px rgba(0,0,0,.45);
+    }
+
+    .custom-marker.corgis { background: var(--blue); }
+    .custom-marker.nuforc { background: var(--orange); }
 
     .footer {
       margin-top: 22px;
@@ -461,26 +371,26 @@
 
     @media (max-width: 949px) {
       .topbar,
-      .toolbar,
       .footer {
         flex-direction: column;
         align-items: flex-start;
       }
 
       .menu,
-      .chips,
-      .toolbar,
-      .popup-actions,
-      .cta {
+      .cta,
+      .filter-row {
         width: 100%;
       }
 
       .menu a,
-      .chip,
       .cta a,
-      .popup-actions a {
+      .chip {
         flex: 1 1 auto;
         text-align: center;
+      }
+
+      #leafletMap {
+        min-height: 460px;
       }
     }
 
@@ -493,7 +403,7 @@
       }
 
       .layout {
-        grid-template-columns: 300px minmax(0, 1fr) 320px;
+        grid-template-columns: 310px minmax(0, 1fr) 320px;
         align-items: start;
       }
     }
@@ -504,51 +414,46 @@
   <div class="shell">
     <section class="hero">
       <div class="topbar">
-        <div>
-          <div class="eyebrow">Source-aware prototype</div>
-        </div>
+        <div><div class="eyebrow">DEV MVP · real map</div></div>
         <nav class="menu" aria-label="Primary">
           <a href="/">Home</a>
           <a href="/about">About</a>
           <a href="/ufo" class="primary">UFO Map</a>
         </nav>
       </div>
-      <h1>UFO Sightings Map</h1>
+      <h1>Worldwide UFO Sightings</h1>
       <p>
-        A dev MVP for exploring sightings by source, with visible provenance, source colors,
-        and a UI designed to grow into a multi-dataset map instead of hiding where the data comes from.
+        A real interactive world map prototype with visible source provenance, source filters, and room to grow into a multi-dataset sightings explorer.
       </p>
       <div class="cta">
-        <a href="/ufo#map">Open the map</a>
+        <a href="#leafletMap">Open the map</a>
         <a href="https://corgis-edu.github.io/corgis/json/ufo_sightings/" target="_blank" rel="noreferrer">CORGIS reference</a>
         <a href="https://nuforc.org/" target="_blank" rel="noreferrer">NUFORC reference</a>
       </div>
     </section>
 
-    <section class="layout" id="map">
+    <section class="layout">
       <aside class="sidebar">
         <h2 class="section-title">Filters</h2>
-        <p class="section-copy">Switch between sources or search the currently visible set.</p>
-
-        <div class="filters">
-          <div class="chips" role="tablist" aria-label="Source filters">
+        <p class="section-copy">Filter by source or search the visible records.</p>
+        <div class="chips">
+          <div class="filter-row" role="tablist" aria-label="Source filters">
             <button class="chip is-active" data-source="all" type="button">All sources</button>
-            <button class="chip" data-source="corgis" type="button"><span class="dot"></span>CORGIS</button>
-            <button class="chip" data-source="nuforc" type="button"><span class="dot"></span>NUFORC</button>
+            <button class="chip" data-source="corgis" type="button">CORGIS</button>
+            <button class="chip" data-source="nuforc" type="button">NUFORC</button>
           </div>
-
           <input id="search" class="search" type="search" placeholder="Search city, shape, country, source..." aria-label="Search sightings">
         </div>
 
-        <div class="legend">
+        <div class="legend-items" style="margin-top:18px;">
           <h2 class="section-title">Legend</h2>
-          <div class="legend-items">
-            <div class="legend-item"><span class="legend-dot corgis"></span>CORGIS</div>
-            <div class="legend-item"><span class="legend-dot nuforc"></span>NUFORC</div>
+          <div class="legend-row">
+            <span class="legend-item"><span class="legend-dot corgis"></span>CORGIS</span>
+            <span class="legend-item"><span class="legend-dot nuforc"></span>NUFORC</span>
           </div>
         </div>
 
-        <div class="results">
+        <div class="results" style="margin-top:18px;">
           <h2 class="section-title">Results</h2>
           <div id="resultsCount" class="meta"></div>
           <div id="results"></div>
@@ -560,146 +465,57 @@
         <div class="toolbar">
           <div>
             <h2 class="section-title">Map view</h2>
-            <div class="meta">Prototype visualization with source-colored markers.</div>
+            <div class="map-note">Leaflet + OpenStreetMap based MVP. This version uses a small global sample to validate the experience.</div>
           </div>
-          <button id="resetView" class="control" type="button">Reset selection</button>
         </div>
-
-        <div class="map-wrap">
-          <div class="map-bg"></div>
-          <div class="gridlines"></div>
-          <div id="markerLayer" class="marker-layer" aria-live="polite"></div>
-
-          <article id="popup" class="popup" aria-live="polite">
-            <span id="popupSource" class="source-badge"></span>
-            <h3 id="popupTitle"></h3>
-            <div id="popupMeta" class="popup-meta"></div>
-            <p id="popupDescription" class="section-copy"></p>
-            <div class="popup-actions">
-              <a id="popupOriginal" href="#" target="_blank" rel="noreferrer">Original source</a>
-              <a href="#details">View details</a>
-            </div>
-          </article>
-        </div>
+        <div id="leafletMap" aria-label="Interactive sightings map"></div>
       </section>
 
-      <aside id="details" class="detail-panel">
+      <aside class="detail-panel" id="details">
         <h2 class="section-title">Sighting details</h2>
         <div id="detailsContent" class="section-copy">Select a marker or a result card to inspect a sighting.</div>
       </aside>
     </section>
 
     <footer class="footer">
-      <div>DEV MVP, source-aware by design. Current data is a curated sample for interface validation.</div>
+      <div>Dev MVP with real map interaction. Data model remains source-aware for future global dataset expansion.</div>
       <div><a href="/">Back home</a></div>
     </footer>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
-    const sightings = [
-      {
-        id: 'corgis-ak-2005',
-        source: 'corgis',
-        sourceName: 'CORGIS',
-        sourceUrl: 'https://corgis-edu.github.io/corgis/json/ufo_sightings/',
-        title: 'Disk over Anchor Point',
-        shape: 'Disk',
-        city: 'Anchor Point',
-        state: 'AK',
-        country: 'US',
-        lat: 59.7766667,
-        lon: -151.8313889,
-        occurredAt: '2005-05-24 18:30',
-        reportedAt: '2005-05-28',
-        duration: '300 sec',
-        description: 'Large UFO over Mt. Iliamna Alaska. Sample record adapted from the CORGIS UFO sightings dataset.',
-        summary: 'Large UFO over Mt. Iliamna Alaska.',
-      },
-      {
-        id: 'corgis-ca-2011',
-        source: 'corgis',
-        sourceName: 'CORGIS',
-        sourceUrl: 'https://corgis-edu.github.io/corgis/json/ufo_sightings/',
-        title: 'Orange light over Los Angeles',
-        shape: 'Light',
-        city: 'Los Angeles',
-        state: 'CA',
-        country: 'US',
-        lat: 34.0522,
-        lon: -118.2437,
-        occurredAt: '2011-08-19 22:10',
-        reportedAt: '2011-08-20',
-        duration: '45 sec',
-        description: 'Single glowing object drifting silently across the sky. MVP sample marker representing the structured CORGIS feed.',
-        summary: 'Single glowing object drifting silently across the sky.',
-      },
-      {
-        id: 'nuforc-ri-2008',
-        source: 'nuforc',
-        sourceName: 'NUFORC',
-        sourceUrl: 'https://nuforc.org/sighting/?id=64581',
-        title: 'Triangle over Johnston',
-        shape: 'Triangle',
-        city: 'Johnston',
-        state: 'RI',
-        country: 'US',
-        lat: 41.82399,
-        lon: -71.41283,
-        occurredAt: '2008-07-15 23:30',
-        reportedAt: '2008-07-15 20:52 Pacific',
-        duration: '20 sec',
-        description: 'Triangle over Johnston with blue, red, and white lights. Narrative adapted from a public NUFORC record for interface prototyping.',
-        summary: 'Silent triangular object with colored lights.',
-      },
-      {
-        id: 'nuforc-mi-2025',
-        source: 'nuforc',
-        sourceName: 'NUFORC',
-        sourceUrl: 'https://nuforc.org/sighting/?id=188541',
-        title: 'White light near Dundee',
-        shape: 'Other',
-        city: 'Dundee',
-        state: 'MI',
-        country: 'US',
-        lat: 41.95755,
-        lon: -83.65966,
-        occurredAt: '2025-03-25 20:44',
-        reportedAt: '2025-03-25 18:09 Pacific',
-        duration: '2 sec',
-        description: 'White LED-like lights seen while driving southwest. Public NUFORC record used as a representative sample for source-tagged display.',
-        summary: 'White LED-like lights seen while driving.',
-      }
-    ];
+    const state = {
+      currentSource: 'all',
+      currentQuery: '',
+      activeId: null,
+      map: null,
+      markersLayer: null,
+      markerIndex: new Map(),
+      sightings: []
+    };
 
-    const markerLayer = document.getElementById('markerLayer');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const search = document.getElementById('search');
     const results = document.getElementById('results');
     const resultsCount = document.getElementById('resultsCount');
     const empty = document.getElementById('empty');
-    const chips = Array.from(document.querySelectorAll('.chip'));
-    const search = document.getElementById('search');
-    const popup = document.getElementById('popup');
-    const popupSource = document.getElementById('popupSource');
-    const popupTitle = document.getElementById('popupTitle');
-    const popupMeta = document.getElementById('popupMeta');
-    const popupDescription = document.getElementById('popupDescription');
-    const popupOriginal = document.getElementById('popupOriginal');
     const detailsContent = document.getElementById('detailsContent');
-    const resetView = document.getElementById('resetView');
 
-    let currentSource = 'all';
-    let currentQuery = '';
-    let activeId = null;
-
-    function project(lat, lon) {
-      const x = ((lon + 180) / 360) * 100;
-      const y = ((90 - lat) / 180) * 100;
-      return { x: Math.min(94, Math.max(6, x)), y: Math.min(88, Math.max(12, y)) };
+    function getMarkerIcon(source) {
+      return L.divIcon({
+        className: '',
+        html: `<div class="custom-marker ${source}"></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -10]
+      });
     }
 
     function filteredSightings() {
-      return sightings.filter((item) => {
-        const sourceMatch = currentSource === 'all' || item.source === currentSource;
-        const q = currentQuery.trim().toLowerCase();
+      return state.sightings.filter((item) => {
+        const sourceMatch = state.currentSource === 'all' || item.source === state.currentSource;
+        const q = state.currentQuery.trim().toLowerCase();
         const haystack = [
           item.sourceName,
           item.city,
@@ -707,44 +523,45 @@
           item.country,
           item.shape,
           item.title,
-          item.description,
+          item.description
         ].join(' ').toLowerCase();
         const queryMatch = !q || haystack.includes(q);
         return sourceMatch && queryMatch;
       });
     }
 
-    function setActive(id) {
-      activeId = id;
-      render();
-      const selected = sightings.find((item) => item.id === id);
-      if (!selected) return;
-
-      popup.classList.add('is-visible');
-      popupSource.textContent = selected.sourceName;
-      popupSource.className = `source-badge ${selected.source}`;
-      popupTitle.textContent = selected.title;
-      popupMeta.innerHTML = `
-        <div>${selected.city}, ${selected.state}, ${selected.country}</div>
-        <div>${selected.occurredAt} · ${selected.shape} · ${selected.duration}</div>
-      `;
-      popupDescription.textContent = selected.summary;
-      popupOriginal.href = selected.sourceUrl;
+    function renderDetails(item) {
+      if (!item) {
+        detailsContent.innerHTML = 'Select a marker or a result card to inspect a sighting.';
+        return;
+      }
 
       detailsContent.innerHTML = `
-        <span class="source-badge ${selected.source}">${selected.sourceName}</span>
-        <h2 style="margin:14px 0 8px; font-size:1.4rem;">${selected.title}</h2>
+        <span class="source-badge ${item.source}">${item.sourceName}</span>
+        <h2>${item.title}</h2>
         <div class="detail-grid">
-          <div><strong>Occurred</strong><br>${selected.occurredAt}</div>
-          <div><strong>Reported</strong><br>${selected.reportedAt}</div>
-          <div><strong>Shape</strong><br>${selected.shape}</div>
-          <div><strong>Location</strong><br>${selected.city}, ${selected.state}, ${selected.country}</div>
-          <div><strong>Coordinates</strong><br>${selected.lat.toFixed(4)}, ${selected.lon.toFixed(4)}</div>
-          <div><strong>Duration</strong><br>${selected.duration}</div>
+          <div><strong>Occurred</strong><br>${item.occurredAt}</div>
+          <div><strong>Reported</strong><br>${item.reportedAt}</div>
+          <div><strong>Shape</strong><br>${item.shape}</div>
+          <div><strong>Location</strong><br>${item.city}, ${item.state}, ${item.country}</div>
+          <div><strong>Coordinates</strong><br>${item.lat.toFixed(4)}, ${item.lon.toFixed(4)}</div>
+          <div><strong>Duration</strong><br>${item.duration}</div>
         </div>
-        <p style="margin-top:16px;">${selected.description}</p>
-        <p><strong>Source URL:</strong> <a href="${selected.sourceUrl}" target="_blank" rel="noreferrer" style="color:var(--blue);">Open original source</a></p>
+        <p style="margin-top:16px;">${item.description}</p>
+        <a class="detail-link" href="${item.sourceUrl}" target="_blank" rel="noreferrer">Open original source</a>
       `;
+    }
+
+    function setActive(id) {
+      state.activeId = id;
+      const item = state.sightings.find((entry) => entry.id === id) || null;
+      renderDetails(item);
+      const marker = state.markerIndex.get(id);
+      if (marker) {
+        marker.openPopup();
+        state.map.flyTo(marker.getLatLng(), Math.max(state.map.getZoom(), 3), { duration: 0.7 });
+      }
+      renderResults(filteredSightings());
     }
 
     function renderResults(list) {
@@ -753,72 +570,90 @@
       empty.hidden = list.length > 0;
 
       list.forEach((item) => {
-        const wrapper = document.createElement('article');
-        wrapper.className = 'result';
-        wrapper.innerHTML = `
+        const card = document.createElement('article');
+        card.className = 'result';
+        card.innerHTML = `
           <button type="button" aria-label="Open ${item.title}">
             <span class="source-badge ${item.source}">${item.sourceName}</span>
-            <h3 style="margin-top:10px;">${item.title}</h3>
-            <div class="result-meta">
-              <div>${item.city}, ${item.state}, ${item.country}</div>
-              <div>${item.occurredAt} · ${item.shape}</div>
-              <div>${item.summary}</div>
-            </div>
+            <h3>${item.title}</h3>
+            <div class="meta">${item.city}, ${item.state}, ${item.country}</div>
+            <div class="meta">${item.occurredAt} · ${item.shape}</div>
+            <div class="meta">${item.description}</div>
           </button>
         `;
-        wrapper.querySelector('button').addEventListener('click', () => setActive(item.id));
-        results.appendChild(wrapper);
+        card.querySelector('button').addEventListener('click', () => setActive(item.id));
+        results.appendChild(card);
       });
     }
 
-    function renderMarkers(list) {
-      markerLayer.innerHTML = '';
-      list.forEach((item) => {
-        const marker = document.createElement('button');
-        marker.type = 'button';
-        marker.className = `marker ${item.source}${item.id === activeId ? ' is-active' : ''}`;
-        marker.setAttribute('aria-label', `${item.title} marker`);
-        const { x, y } = project(item.lat, item.lon);
-        marker.style.left = `${x}%`;
-        marker.style.top = `${y}%`;
-        marker.addEventListener('click', () => setActive(item.id));
-        markerLayer.appendChild(marker);
-      });
-    }
+    function renderMap(list) {
+      state.markersLayer.clearLayers();
+      state.markerIndex.clear();
 
-    function render() {
-      const list = filteredSightings();
-      renderResults(list);
-      renderMarkers(list);
-
-      if (!list.find((item) => item.id === activeId)) {
-        activeId = null;
-        popup.classList.remove('is-visible');
-        detailsContent.innerHTML = 'Select a marker or a result card to inspect a sighting.';
+      if (!list.length) {
+        return;
       }
+
+      const bounds = [];
+
+      list.forEach((item) => {
+        const marker = L.marker([item.lat, item.lon], { icon: getMarkerIcon(item.source) });
+        marker.bindPopup(`
+          <span class="source-badge ${item.source}">${item.sourceName}</span>
+          <div class="popup-title">${item.title}</div>
+          <div>${item.city}, ${item.state}, ${item.country}</div>
+          <div>${item.occurredAt} · ${item.shape} · ${item.duration}</div>
+          <div style="margin-top:8px;">${item.description}</div>
+          <div style="margin-top:12px;"><a href="${item.sourceUrl}" target="_blank" rel="noreferrer" style="color:#63d9ff;">Original source</a></div>
+        `);
+        marker.on('click', () => setActive(item.id));
+        marker.addTo(state.markersLayer);
+        state.markerIndex.set(item.id, marker);
+        bounds.push([item.lat, item.lon]);
+      });
+
+      state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 3 });
+    }
+
+    function rerender() {
+      const list = filteredSightings();
+      if (state.activeId && !list.some((item) => item.id === state.activeId)) {
+        state.activeId = null;
+        renderDetails(null);
+      }
+      renderResults(list);
+      renderMap(list);
+    }
+
+    async function init() {
+      state.map = L.map('leafletMap', { worldCopyJump: true, minZoom: 2 }).setView([18, 0], 2);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(state.map);
+      state.markersLayer = L.layerGroup().addTo(state.map);
+
+      const response = await fetch('/data/ufo-sightings-sample.json', { cache: 'no-store' });
+      state.sightings = await response.json();
+      rerender();
     }
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => {
-        currentSource = chip.dataset.source;
+        state.currentSource = chip.dataset.source;
         chips.forEach((btn) => btn.classList.toggle('is-active', btn === chip));
-        render();
+        rerender();
       });
     });
 
     search.addEventListener('input', () => {
-      currentQuery = search.value;
-      render();
+      state.currentQuery = search.value;
+      rerender();
     });
 
-    resetView.addEventListener('click', () => {
-      activeId = null;
-      popup.classList.remove('is-visible');
-      detailsContent.innerHTML = 'Select a marker or a result card to inspect a sighting.';
-      render();
+    init().catch((error) => {
+      console.error(error);
+      detailsContent.innerHTML = 'The map failed to load this dataset in dev. Check the console and sample data file.';
     });
-
-    render();
   </script>
 </body>
 </html>
