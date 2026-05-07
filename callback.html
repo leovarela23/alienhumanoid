@@ -613,6 +613,15 @@
       localStorage.setItem(leaderboardKey, JSON.stringify(entries.slice(0, 5)));
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     async function fetchSharedLeaderboard() {
       if (!leaderboardEnabled) return loadLocalLeaderboard();
       try {
@@ -663,7 +672,7 @@
         leaderboardList.innerHTML = '<li><strong>No scores yet</strong></li>';
         return;
       }
-      leaderboardList.innerHTML = entries.map(entry => `<li><strong>${entry.name}</strong> · ${entry.score}</li>`).join('');
+      leaderboardList.innerHTML = entries.map(entry => `<li><strong>${escapeHtml(entry.name)}</strong> · ${Number(entry.score) || 0}</li>`).join('');
     }
 
     async function refreshLeaderboard() {
