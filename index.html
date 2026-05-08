@@ -372,6 +372,7 @@
       }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <div class="orb"></div>
@@ -418,6 +419,7 @@
                 <input id="player-name" name="player-name" type="text" maxlength="24" placeholder="Your name" required>
                 <button type="submit">Save</button>
               </div>
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAADLX0ic9sA0IreIc"></div>
             </form>
           </div>
         </div>
@@ -494,7 +496,7 @@
       }
     }
 
-    async function submitSharedScore(name, score) {
+    async function submitSharedScore(name, score, turnstileToken) {
       if (!leaderboardEnabled) {
         const entries = loadLocalLeaderboard();
         entries.push({ name, score });
@@ -507,7 +509,7 @@
         const response = await fetch(leaderboardApi, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, score })
+          body: JSON.stringify({ name, score, turnstileToken })
         });
         if (!response.ok) throw new Error('submit failed');
         const data = await response.json();
@@ -715,10 +717,16 @@
     leaderboardForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (pendingLeaderboardScore === null) return;
+      const turnstileToken = window.turnstile?.getResponse();
+      if (!turnstileToken) {
+        alert('Please complete the verification first.');
+        return;
+      }
       const name = playerNameInput.value.trim() || 'Anonymous';
-      const scores = await submitSharedScore(name, pendingLeaderboardScore);
+      const scores = await submitSharedScore(name, pendingLeaderboardScore, turnstileToken);
       renderLeaderboard(scores);
       hideLeaderboardForm();
+      window.turnstile?.reset();
     });
 
     document.addEventListener('keydown', (event) => {
