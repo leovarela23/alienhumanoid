@@ -432,6 +432,7 @@
       }
     }
   </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <div class="orb"></div>
@@ -499,6 +500,7 @@
                     <input id="player-name" name="player-name" type="text" maxlength="24" placeholder="Your name" required>
                     <button type="submit">Save</button>
                   </div>
+                  <div class="cf-turnstile" data-sitekey="0x4AAAAAADLX0ic9sA0IreIc"></div>
                 </form>
               </div>
             </div>
@@ -849,16 +851,19 @@
       draw();
     }
 
-    leaderboardForm.addEventListener('submit', (event) => {
+    leaderboardForm.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (pendingLeaderboardScore === null) return;
+      const turnstileToken = window.turnstile?.getResponse();
+      if (!turnstileToken) {
+        alert('Please complete the verification first.');
+        return;
+      }
       const name = playerNameInput.value.trim() || 'Anonymous';
-      const entries = loadLeaderboard();
-      entries.push({ name, score: pendingLeaderboardScore });
-      entries.sort((a, b) => b.score - a.score);
-      saveLeaderboard(entries);
-      renderLeaderboard();
+      const scores = await submitSharedScore(name, pendingLeaderboardScore, turnstileToken);
+      renderLeaderboard(scores);
       hideLeaderboardForm();
+      window.turnstile?.reset();
     });
 
     document.addEventListener('keydown', (event) => {
