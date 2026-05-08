@@ -638,7 +638,7 @@
       }
     }
 
-    async function submitSharedScore(name, score) {
+    async function submitSharedScore(name, score, turnstileToken) {
       if (!leaderboardEnabled) {
         const entries = loadLocalLeaderboard();
         entries.push({ name, score });
@@ -651,7 +651,7 @@
         const response = await fetch(leaderboardApi, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, score })
+          body: JSON.stringify({ name, score, turnstileToken })
         });
         if (!response.ok) throw new Error('submit failed');
         const data = await response.json();
@@ -811,10 +811,10 @@
       }
     }
 
-    function endGame() {
+    async function endGame() {
       gameOver = true;
       draw();
-      if (qualifiesForLeaderboard(score)) {
+      if (await qualifiesForLeaderboard(score)) {
         showLeaderboardForm(score);
       } else {
         hideLeaderboardForm();
